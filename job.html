@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="job_details_title">Job Details - Sahakar Seva</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .container { max-width: 480px; margin: 0 auto; padding: 16px; padding-bottom: 80px; }
+        .back-btn { background: none; border: none; color: #2D6A4F; font-size: 1rem; cursor: pointer; display: flex; align-items: center; margin-bottom: 16px; padding: 0; }
+        .back-btn svg { width: 24px; height: 24px; fill: currentColor; margin-right: 8px; }
+        .card { background: white; border-radius: 8px; padding: 16px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .job-trade { font-weight: bold; display: flex; align-items: center; margin-bottom: 12px; color: #495057; }
+        .job-trade svg { width: 20px; height: 20px; margin-right: 8px; fill: #2D6A4F; }
+        .offer-amount { font-size: 2rem; font-weight: bold; color: #2D6A4F; margin-bottom: 12px; }
+        .detail-row { margin-bottom: 8px; color: #495057; display: flex; align-items: flex-start; }
+        .detail-row svg { width: 18px; height: 18px; margin-right: 8px; fill: #6c757d; flex-shrink: 0; margin-top: 2px; }
+        
+        .wage-floor { display: flex; align-items: center; margin: 24px 0; color: #2D6A4F; font-weight: bold; font-size: 0.9rem; }
+        .wage-floor::before, .wage-floor::after { content: ''; flex: 1; border-bottom: 1px dashed #2D6A4F; }
+        .wage-floor span { padding: 0 12px; display: flex; align-items: center; }
+        .wage-floor svg { width: 16px; height: 16px; margin-right: 4px; fill: currentColor; }
+
+        .bids-section { margin-bottom: 24px; }
+        .bid-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #e9ecef; }
+        .bid-item:last-child { border-bottom: none; }
+        .bid-worker { font-weight: bold; color: #343a40; }
+        .bid-amount { font-weight: bold; }
+        .tag-counter { background: #e9ecef; color: #495057; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; margin-left: 8px; }
+        .bid-item.below-floor { color: #adb5bd; }
+        .bid-item.below-floor .bid-worker { color: #adb5bd; }
+        .warn-icon { fill: #f5a623; width: 16px; height: 16px; vertical-align: middle; margin-left: 4px; }
+        
+        .your-bid-section { position: fixed; bottom: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto; background: white; padding: 16px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); border-top: 1px solid #e9ecef; }
+        .quick-bids { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+        .btn-quick { flex: 1; min-width: 70px; padding: 12px 8px; text-align: center; border-radius: 4px; font-weight: bold; cursor: pointer; border: 1px solid #2D6A4F; background: transparent; color: #2D6A4F; }
+        .btn-quick.primary { background: #2D6A4F; color: white; }
+        .custom-bid-container { display: none; gap: 8px; }
+        .custom-bid-container.active { display: flex; }
+        .custom-input { flex: 1; padding: 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 1rem; }
+        .btn-submit { background: #2D6A4F; color: white; border: none; padding: 12px 24px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        .btn-submit:disabled { background: #adb5bd; cursor: not-allowed; }
+        .error-text { color: #e63946; font-size: 0.85rem; margin-top: 4px; display: none; }
+        
+        .toast { position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 12px 24px; border-radius: 4px; display: none; z-index: 200; width: 80%; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="back-btn" onclick="window.location.href='/dashboard.html'">
+            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            <span data-i18n="back_to_dashboard">Back to Dashboard</span>
+        </button>
+
+        <div class="card" id="job-details-card">
+            <!-- Populated via JS -->
+            <div data-i18n="loading">Loading job details...</div>
+        </div>
+
+        <div class="wage-floor" id="wage-floor-container" style="display:none;">
+            <span>
+                <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+                <span data-i18n="min_fair_bid">Minimum fair bid:</span> &nbsp;₹<span id="floor-amount">0</span>
+            </span>
+        </div>
+
+        <div class="bids-section">
+            <h3 data-i18n="existing_bids">Existing Bids</h3>
+            <div class="card" style="padding: 0;" id="bids-list">
+                <!-- Bids populated via JS -->
+                <div style="padding: 16px; text-align: center; color: #6c757d;" data-i18n="no_bids_yet">No bids yet.</div>
+            </div>
+        </div>
+
+        <div class="your-bid-section">
+            <div class="quick-bids" id="quick-bids-container">
+                <button class="btn-quick primary" id="btn-accept"><span data-i18n="accept">Accept</span> ₹<span id="accept-amount">0</span></button>
+                <button class="btn-quick" id="btn-plus-20">+₹20</button>
+                <button class="btn-quick" id="btn-plus-50">+₹50</button>
+                <button class="btn-quick" id="btn-custom" data-i18n="custom">Custom</button>
+            </div>
+            
+            <div class="custom-bid-container" id="custom-bid-container">
+                <div style="flex:1;">
+                    <input type="number" class="custom-input" id="custom-bid-input" placeholder="Enter amount">
+                    <div class="error-text" id="bid-error-text" data-i18n="below_floor_error">Amount below fair wage floor.</div>
+                </div>
+                <button class="btn-submit" id="btn-submit-custom" data-i18n="submit">Submit</button>
+            </div>
+        </div>
+
+        <div class="toast" id="toast" role="alert" aria-live="assertive"></div>
+    </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="/js/supabase-client.js"></script>
+    <script src="/js/i18n.js"></script>
+    <script src="/js/job.js" defer></script>
+</body>
+</html>

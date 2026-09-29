@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title data-i18n="bids.title">Incoming Bids - Sahakar Seva</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .app-container { max-width: 480px; margin: 0 auto; padding: 16px; font-family: system-ui, -apple-system, sans-serif; background-color: #f8fafc; min-height: 100vh;}
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0; background: white; padding: 16px; border-radius: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);}
+        .logo { font-size: 20px; font-weight: bold; color: #2D6A4F; display: flex; align-items: center; gap: 8px; }
+        .header-actions { display: flex; gap: 12px; align-items: center; }
+        .lang-select { padding: 6px; border-radius: 4px; border: 1px solid #cbd5e1; }
+        .btn-logout { background: none; border: none; color: #64748b; cursor: pointer; padding: 8px; }
+        
+        .page-header { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+        .page-title { font-size: 20px; font-weight: bold; color: #1e293b; }
+        .live-indicator { width: 10px; height: 10px; border-radius: 50%; background-color: #22c55e; animation: pulse-green 2s infinite; }
+        @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
+
+        .job-summary { background: white; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .job-summary-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .job-trade { font-weight: bold; color: #2D6A4F; text-transform: capitalize; }
+        .job-offer { font-weight: bold; color: #334155; }
+        .job-desc { font-size: 14px; color: #64748b; }
+
+        .bid-count { font-size: 14px; color: #64748b; margin-bottom: 12px; font-weight: 500; }
+
+        .bids-list { display: flex; flex-direction: column; gap: 16px; }
+        .bid-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .bid-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+        .worker-info { display: flex; flex-direction: column; gap: 4px; }
+        .worker-name { font-weight: bold; color: #1e293b; font-size: 16px; }
+        .society-name { font-size: 12px; color: #64748b; }
+        
+        .trust-badge-container { cursor: pointer; user-select: none; }
+        .trust-badge { display: inline-flex; align-items: center; gap: 4px; background: #f0fdf4; color: #15803d; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; border: 1px solid #bbf7d0; }
+        .trust-breakdown { display: none; margin-top: 8px; padding: 12px; background: #f8fafc; border-radius: 8px; font-size: 12px; border: 1px solid #e2e8f0; }
+        .trust-breakdown.show { display: block; }
+        .trust-row { display: flex; justify-content: space-between; margin-bottom: 4px; color: #475569; }
+        .trust-row:last-child { margin-bottom: 0; padding-top: 4px; border-top: 1px dashed #cbd5e1; font-weight: bold; color: #1e293b; }
+
+        .bid-details { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; }
+        .logistics { font-size: 13px; color: #64748b; display: flex; align-items: center; gap: 4px; }
+        .bid-price { font-size: 18px; font-weight: bold; color: #1e293b; display: flex; flex-direction: column; align-items: flex-end; }
+        .counter-tag { font-size: 11px; background: #fef08a; color: #854d0e; padding: 2px 6px; border-radius: 4px; font-weight: normal; margin-top: 2px; }
+        
+        .btn-primary { background-color: #2D6A4F; color: white; border: none; border-radius: 8px; padding: 8px 16px; font-weight: bold; cursor: pointer; transition: background-color 0.2s; }
+        .btn-primary:active { transform: scale(0.98); }
+        
+        .empty-state { text-align: center; padding: 40px 20px; color: #94a3b8; }
+        .spinner { border: 3px solid #f3f3f3; border-top: 3px solid #2D6A4F; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; margin: 0 auto 16px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <div class="logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                <span data-i18n="app.name">सहकार सेवा</span>
+            </div>
+            <div class="header-actions">
+                <select id="lang-select" class="lang-select" aria-label="Select Language">
+                    <option value="en">EN</option>
+                    <option value="hi">HI</option>
+                    <option value="mr">MR</option>
+                </select>
+                <button id="btn-logout" class="btn-logout" aria-label="Logout" data-i18n="nav.logout">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                </button>
+            </div>
+        </header>
+
+        <main>
+            <div class="page-header">
+                <h1 class="page-title" data-i18n="bids.title">Incoming Bids</h1>
+                <div class="live-indicator"></div>
+            </div>
+
+            <div class="job-summary" id="job-summary">
+                <div class="job-summary-header">
+                    <span class="job-trade" id="job-trade">...</span>
+                    <span class="job-offer" id="job-offer">...</span>
+                </div>
+                <div class="job-desc" id="job-desc">...</div>
+            </div>
+
+            <div class="bid-count" id="bid-count" data-i18n="bids.waiting">Waiting for workers to bid...</div>
+
+            <div class="bids-list" id="bids-list">
+                <div class="empty-state" id="empty-state">
+                    <div class="spinner"></div>
+                    <p data-i18n="bids.waiting_desc">Broadcasting your request to nearby societies...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="/js/supabase-client.js"></script>
+    <script src="/js/i18n.js"></script>
+    <script src="/js/voice.js"></script>
+    <script src="/js/bids.js" defer></script>
+</body>
+</html>

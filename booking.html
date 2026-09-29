@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title data-i18n="booking.title">Book a Service - Sahakar Seva</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <div class="header-brand">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24" class="text-primary mr-2">
+          <path d="M12 2L2 22h20L12 2zm0 3.8l7 14.2H5l7-14.2z"/>
+        </svg>
+        <span class="font-bold text-h3">Sahakar Seva</span>
+      </div>
+      <div class="lang-select-container">
+        <select class="form-select lang-select" id="langSelect">
+          <option value="en">English</option>
+          <option value="hi">à¤¹à¤¿à¤‚à¤¦à¥€</option>
+          <option value="mr">à¤®à¤°à¤¾à¤ à¥€</option>
+        </select>
+      </div>
+    </header>
+
+    <h2 class="text-h2 mt-3 mb-4 text-center">
+      <span data-i18n="booking.heading">Book a Service</span>
+      <svg viewBox="0 0 24 24" fill="#FFC107" width="20" height="20" class="inline-icon ml-1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+    </h2>
+
+    <div class="voice-section text-center mb-5">
+      <button class="mic-btn" id="voiceMicBtn">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32">
+          <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/>
+        </svg>
+      </button>
+      <p class="mt-2 font-bold" id="voiceLabel" data-i18n="booking.tapToSpeak">Tap to speak</p>
+      <p class="text-small text-muted" data-i18n="booking.orDescribe">or describe your need below</p>
+    </div>
+
+    <form id="bookingForm">
+      <section class="mb-4">
+        <h3 class="text-h3 mb-3" data-i18n="booking.chooseService">Choose a service</h3>
+        <div class="trade-grid" id="tradeSelector">
+          <div class="trade-tile" data-trade="electrician">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 21h-1l1-7H7.5c-.58 0-.57-.32-.38-.66.19-.34 5.95-10.4 5.95-10.4.21-.36.63-.44.97-.24.16.1.28.26.34.44l-1 7h3.5c.46 0 .58.26.44.57L11.5 20.6c-.14.3-.39.43-.5.4z"/></svg>
+            <span data-i18n="trade.electrician">Electrician</span>
+          </div>
+          <div class="trade-tile" data-trade="plumber">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.16 8.82l-7.94 7.94c-.78.78-2.05.78-2.83 0l-1.41-1.41c-.78-.78-.78-2.05 0-2.83l7.94-7.94c1.1-1.1 2.87-1.1 3.97 0l.27.27c1.1 1.1 1.1 2.87 0 3.97zm-14.1-1.41L11.3 3.17c-.39-.39-1.02-.39-1.41 0L5.64 7.41c-.39.39-.39 1.02 0 1.41l4.24 4.24c.39.39 1.02.39 1.41 0l4.24-4.24c.39-.39.39-1.02 0-1.41L11.3 3.17z"/></svg>
+            <span data-i18n="trade.plumber">Plumber</span>
+          </div>
+          <div class="trade-tile" data-trade="carpenter">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+            <span data-i18n="trade.carpenter">Carpenter</span>
+          </div>
+          <div class="trade-tile" data-trade="mason">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zm0 7.5L5.4 6 12 2.7 18.6 6 12 9.5zM2 9v6l10 5 10-5V9l-10 5-10-5z"/></svg>
+            <span data-i18n="trade.mason">Mason</span>
+          </div>
+          <div class="trade-tile" data-trade="acrepair">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.7 11c-.3-.8-.9-1.4-1.7-1.7V5.5c0-1.4-1.1-2.5-2.5-2.5S11 4.1 11 5.5v3.8c-.8.3-1.4.9-1.7 1.7H5.5C4.1 11 3 12.1 3 13.5S4.1 16 5.5 16h3.8c.3.8.9 1.4 1.7 1.7v3.8c0 1.4 1.1 2.5 2.5 2.5s2.5-1.1 2.5-2.5v-3.8c.8-.3 1.4-.9 1.7-1.7h3.8c1.4 0 2.5-1.1 2.5-2.5S22.9 11 21.5 11h-3.8zm-4.2 3.5c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
+            <span data-i18n="trade.acrepair">AC Repair</span>
+          </div>
+          <div class="trade-tile" data-trade="cleaning">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 9h-2V7h-2v5H6v-2H4v2c0 1.1.9 2 2 2h2v5h2v-5h2v2h2v-2c1.1 0 2-.9 2-2v-2h-2v2h-2v-2z"/></svg>
+            <span data-i18n="trade.cleaning">Cleaning</span>
+          </div>
+        </div>
+        <input type="hidden" id="selectedTrade" required>
+      </section>
+
+      <section class="mb-4">
+        <h3 class="text-h3 mb-3" data-i18n="booking.yourOffer">Your offer</h3>
+        <div class="input-with-icon">
+          <span class="input-prefix font-bold text-primary">â‚¹</span>
+          <input type="number" id="offerPrice" class="form-input" style="padding-left: 2.5rem;" placeholder="e.g. 500" required>
+        </div>
+        <p class="form-hint mt-1 text-success" id="fairRangeHint">Fair range: â‚¹400 â€” â‚¹600</p>
+        <p class="wage-floor-warning hidden text-danger mt-1 text-small" id="wageWarning">Offer is below minimum fair wage.</p>
+      </section>
+
+      <section class="mb-4">
+        <h3 class="text-h3 mb-3" data-i18n="booking.description">Description</h3>
+        <textarea id="jobDescription" class="form-input" rows="3" placeholder="Describe what you need help with..." data-i18n-placeholder="booking.descPlaceholder" required></textarea>
+      </section>
+
+      <section class="mb-5">
+        <h3 class="text-h3 mb-3" data-i18n="booking.location">Location</h3>
+        <div class="input-with-icon">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+          </svg>
+          <input type="text" id="locationInput" class="form-input" placeholder="Your address" data-i18n-placeholder="booking.locationPlaceholder" required>
+        </div>
+        <p class="text-small text-muted mt-1" data-i18n="booking.locationNote">We'll detect your approximate location</p>
+      </section>
+
+      <button type="button" class="btn btn-primary full-width" id="previewBookingBtn" data-i18n="booking.previewBtn">Review Booking</button>
+    </form>
+
+    <div id="summaryCard" class="card hidden border-left-gradient mt-4">
+      <h3 class="text-h3 mb-3" data-i18n="booking.summaryTitle">Booking Summary</h3>
+      <div class="summary-list mb-4">
+        <p><strong>Service:</strong> <span id="sumTrade">---</span></p>
+        <p><strong>Offer:</strong> â‚¹<span id="sumOffer">---</span></p>
+        <p><strong>Details:</strong> <span id="sumDesc">---</span></p>
+        <p><strong>Location:</strong> <span id="sumLoc">---</span></p>
+      </div>
+      <button type="button" class="btn btn-outline full-width mb-2" id="editBookingBtn" data-i18n="booking.editBtn">Edit Details</button>
+      <button type="button" class="btn btn-primary full-width" id="confirmBookingBtn" data-i18n="booking.confirmBtn">Confirm Booking</button>
+    </div>
+
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="/js/supabase-client.js"></script>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/voice.js"></script>
+  <script src="/js/booking.js" defer></script>
+</body>
+</html>

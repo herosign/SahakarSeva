@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="invoice_title">Invoice & Rating - Sahakar Seva</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .container { max-width: 480px; margin: 0 auto; padding: 16px; background: #f8f9fa; min-height: 100vh; }
+        .header-title { display: flex; align-items: center; justify-content: center; color: #2D6A4F; margin-bottom: 24px; }
+        .header-title svg { width: 32px; height: 32px; margin-right: 8px; fill: currentColor; }
+        
+        .invoice-card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 24px; }
+        .invoice-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px dashed #e9ecef; color: #495057; }
+        .invoice-row:last-of-type { border-bottom: none; }
+        .invoice-row.total { font-weight: bold; font-size: 1.2rem; color: #343a40; border-top: 2px solid #343a40; margin-top: 8px; }
+        .invoice-row.highlight { font-weight: bold; font-size: 1.4rem; color: #2D6A4F; background: #e9f5ef; padding: 16px; border-radius: 4px; margin-top: 16px; border: 1px solid #c3e6cb; }
+        
+        .info-icon { display: inline-flex; width: 16px; height: 16px; background: #ced4da; color: white; border-radius: 50%; align-items: center; justify-content: center; font-size: 12px; margin-left: 4px; cursor: help; }
+        .note-text { font-size: 0.8rem; color: #6c757d; display: block; margin-top: 4px; }
+
+        .proportion-bar { display: flex; height: 12px; border-radius: 6px; overflow: hidden; margin: 20px 0 8px; }
+        .prop-worker { background: #2D6A4F; }
+        .prop-welfare { background: #0077b6; }
+        .prop-platform { background: #ced4da; }
+        .legend { display: flex; justify-content: space-between; font-size: 0.8rem; color: #6c757d; }
+        .legend-item { display: flex; align-items: center; }
+        .legend-color { width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; }
+
+        .rating-section { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; margin-bottom: 24px; }
+        .stars { display: flex; justify-content: center; gap: 8px; margin: 16px 0; }
+        .star { width: 40px; height: 40px; fill: #e9ecef; cursor: pointer; transition: fill 0.2s; }
+        .star.active { fill: #f5a623; }
+        
+        .tip-buttons { display: flex; gap: 8px; justify-content: center; margin: 16px 0; flex-wrap: wrap; }
+        .tip-btn { border: 1px solid #2D6A4F; background: white; color: #2D6A4F; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: bold; }
+        .tip-btn.active { background: #2D6A4F; color: white; }
+        
+        .review-input { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 4px; margin-bottom: 16px; box-sizing: border-box; resize: vertical; }
+        
+        .btn-primary { background: #2D6A4F; color: white; border: none; padding: 16px; width: 100%; border-radius: 4px; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-bottom: 12px; }
+        .btn-outline { background: transparent; color: #343a40; border: 1px solid #ced4da; padding: 12px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .btn-outline svg { width: 20px; height: 20px; margin-right: 8px; fill: currentColor; }
+
+        .thank-you { display: none; text-align: center; padding: 40px 20px; background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .thank-you svg { width: 64px; height: 64px; fill: #2D6A4F; margin-bottom: 16px; }
+
+        @media print {
+            body { background: white; }
+            .rating-section, .btn-primary, .btn-outline { display: none !important; }
+            .invoice-card { box-shadow: none; border: 1px solid #000; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="invoice-view">
+            <h1 class="header-title">
+                <svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
+                <span data-i18n="invoice">Invoice</span>
+            </h1>
+
+            <div class="invoice-card">
+                <div class="invoice-row">
+                    <span data-i18n="base_fare">Base Fare</span>
+                    <span id="inv-base">₹0</span>
+                </div>
+                <div class="invoice-row">
+                    <span data-i18n="discount">Discount</span>
+                    <span>₹0</span>
+                </div>
+                <div class="invoice-row">
+                    <span>
+                        <span data-i18n="welfare_contribution">Welfare Contribution (2%)</span>
+                        <span class="info-icon" title="Goes to Cooperative Welfare Fund for worker benefits">i</span>
+                    </span>
+                    <span id="inv-welfare">₹0</span>
+                </div>
+                <div class="invoice-row">
+                    <span>
+                        <span data-i18n="platform_fee">Platform Fee</span>
+                        <span class="note-text" data-i18n="platform_note">Sahakar Seva charges 0% commission</span>
+                    </span>
+                    <span>₹0</span>
+                </div>
+                <div class="invoice-row" id="row-tip" style="display:none;">
+                    <span>
+                        <span data-i18n="tip">Tip</span>
+                        <span class="note-text" data-i18n="tip_note">100% goes to worker</span>
+                    </span>
+                    <span id="inv-tip">₹0</span>
+                </div>
+                <div class="invoice-row total">
+                    <span data-i18n="total_paid">Total Paid</span>
+                    <span id="inv-total">₹0</span>
+                </div>
+                <div class="invoice-row highlight">
+                    <span data-i18n="worker_receives">Worker Receives</span>
+                    <span id="inv-worker">₹0</span>
+                </div>
+
+                <div class="proportion-bar">
+                    <div class="prop-worker" id="bar-worker" style="width: 98%;"></div>
+                    <div class="prop-welfare" id="bar-welfare" style="width: 2%;"></div>
+                    <div class="prop-platform" style="width: 0%;"></div>
+                </div>
+                <div class="legend">
+                    <div class="legend-item"><div class="legend-color prop-worker"></div> <span data-i18n="worker_share">Worker</span></div>
+                    <div class="legend-item"><div class="legend-color prop-welfare"></div> <span data-i18n="welfare_fund">Welfare Fund</span></div>
+                    <div class="legend-item"><div class="legend-color prop-platform"></div> <span data-i18n="platform">Platform (0%)</span></div>
+                </div>
+            </div>
+
+            <div class="rating-section">
+                <h3 style="margin-top:0;" data-i18n="rate_worker">Rate your worker</h3>
+                <div class="stars" id="star-container">
+                    <svg class="star" data-val="1" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                    <svg class="star" data-val="2" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                    <svg class="star" data-val="3" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                    <svg class="star" data-val="4" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                    <svg class="star" data-val="5" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                </div>
+                
+                <h4 style="margin-bottom:8px; color:#495057;" data-i18n="add_tip">Add a tip</h4>
+                <div class="tip-buttons" id="tip-container">
+                    <button class="tip-btn active" data-val="0">₹0</button>
+                    <button class="tip-btn" data-val="10">₹10</button>
+                    <button class="tip-btn" data-val="20">₹20</button>
+                    <button class="tip-btn" data-val="50">₹50</button>
+                </div>
+
+                <textarea class="review-input" placeholder="Write a review (optional)" rows="3" aria-label="Review"></textarea>
+                
+                <button class="btn-primary" id="btn-submit-review" data-i18n="submit_review">Submit Review</button>
+            </div>
+
+            <button class="btn-outline" onclick="window.print()">
+                <svg viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
+                <span data-i18n="download_receipt">Download Receipt</span>
+            </button>
+        </div>
+
+        <div class="thank-you" id="thank-you-view">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            <h2 data-i18n="thank_you">Thank you!</h2>
+            <p data-i18n="payment_ensures">Your payment ensures fair wages for cooperative workers.</p>
+            <button class="btn-outline" style="margin-top:20px;" onclick="window.location.href='/'" data-i18n="back_to_home">Back to Home</button>
+        </div>
+    </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="/js/supabase-client.js"></script>
+    <script src="/js/i18n.js"></script>
+    <script src="/js/invoice.js" defer></script>
+</body>
+</html>

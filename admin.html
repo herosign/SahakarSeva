@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="admin_title">Sahakar Seva - Admin Panel</title>
+    <style>
+        :root {
+            --primary: #2D6A4F;
+            --primary-light: #40916c;
+            --secondary: #1B4965;
+            --warning: #D97706;
+            --danger: #DC2626;
+            --success: #10B981;
+            --bg-color: #f8fafc;
+            --surface: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            background-color: var(--surface);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .lang-select {
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 4px;
+            padding: 0.25rem;
+            font-size: 0.875rem;
+        }
+        .lang-select option {
+            color: var(--text-main);
+        }
+
+        .btn-logout {
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Page Header */
+        .page-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .page-header h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .page-header p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        /* Tabs */
+        .tabs-container {
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            background: var(--surface);
+        }
+
+        .tabs {
+            display: flex;
+            padding: 0 1rem;
+        }
+
+        .tab-btn {
+            padding: 0.75rem 1rem;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        /* Content Sections */
+        .section-content {
+            display: none;
+            padding: 1rem;
+            flex: 1;
+            overflow-y: auto;
+        }
+        .section-content.active {
+            display: block;
+        }
+
+        .section-header {
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .badge {
+            background-color: var(--warning);
+            color: white;
+            font-size: 0.75rem;
+            padding: 0.125rem 0.375rem;
+            border-radius: 999px;
+            font-weight: 600;
+        }
+
+        .badge-danger { background-color: var(--danger); }
+        .badge-success { background-color: var(--success); }
+
+        /* Cards */
+        .card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+        
+        .card-title {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .card-meta {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .card-actions {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+
+        /* Buttons */
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .btn-small {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .btn-success { background-color: var(--success); }
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        /* Form elements */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+            color: var(--secondary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+        
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .help-text {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* Chart */
+        .chart-container {
+            height: 200px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            padding: 1rem 0 2.5rem 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .chart-bar-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 12%;
+            height: 100%;
+            justify-content: flex-end;
+            position: relative;
+        }
+
+        .chart-bar {
+            width: 100%;
+            background-color: var(--primary-light);
+            border-radius: 4px 4px 0 0;
+            transition: height 0.3s ease;
+            min-height: 10px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .chart-value {
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: var(--secondary);
+            margin-bottom: 0.25rem;
+        }
+
+        .chart-label {
+            position: absolute;
+            bottom: -1.5rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .chart-advice {
+            position: absolute;
+            bottom: -2.75rem;
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            text-align: center;
+            width: 200%;
+            white-space: nowrap;
+        }
+
+        /* Utilities */
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .toast-container {
+            position: fixed;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 1000;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .toast {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.875rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            animation: slideUp 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .toast.success { background-color: var(--success); }
+        .toast.error { background-color: var(--danger); }
+        .toast.warning { background-color: var(--warning); }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            <span data-i18n="app_name">सहकार सेवा</span>
+        </div>
+        <div class="header-actions">
+            <select class="lang-select" id="langSelect" aria-label="Select Language">
+                <option value="en">EN</option>
+                <option value="hi">HI</option>
+                <option value="mr">MR</option>
+            </select>
+            <button class="btn-logout" id="logoutBtn" aria-label="Logout">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="page-header">
+        <div>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+        </div>
+        <div>
+            <h1 data-i18n="admin_panel_title">Admin Panel</h1>
+            <p data-i18n="admin_panel_subtitle">Federation & Society Management</p>
+        </div>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div class="tabs-container">
+        <div class="tabs">
+            <button class="tab-btn active" data-target="workers" data-i18n="tab_workers">Workers</button>
+            <button class="tab-btn" data-target="forecast" data-i18n="tab_forecast">Forecast</button>
+            <button class="tab-btn" data-target="wages" data-i18n="tab_wages">Wage Floors</button>
+            <button class="tab-btn" data-target="settings" data-i18n="tab_settings">Settings</button>
+            <button class="tab-btn" data-target="alerts" data-i18n="tab_alerts">Alerts</button>
+        </div>
+    </div>
+
+    <!-- Tab Content: Workers -->
+    <div id="workers" class="section-content active">
+        <div class="section-header">
+            <h2 class="section-title" data-i18n="pending_workers_title">
+                Pending Worker Approvals
+                <span class="badge" id="pendingCount">0</span>
+            </h2>
+        </div>
+        <div id="workersList">
+            <!-- Populated by JS -->
+            <div class="empty-state" data-i18n="loading">Loading...</div>
+        </div>
+    </div>
+
+    <!-- Tab Content: Forecast -->
+    <div id="forecast" class="section-content">
+        <div class="section-header">
+            <h2 class="section-title" data-i18n="demand_forecast_title">7-Day Demand Forecast</h2>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" data-i18n="select_trade">Select Trade</label>
+            <select class="form-control" id="forecastTrade">
+                <option value="Electrician">Electrician</option>
+                <option value="Plumber">Plumber</option>
+                <option value="Carpenter">Carpenter</option>
+                <option value="Mason">Mason</option>
+                <option value="Painter">Painter</option>
+                <option value="Welder">Welder</option>
+            </select>
+        </div>
+
+        <div class="card">
+            <div class="chart-container" id="forecastChart">
+                <!-- Bars populated by JS -->
+            </div>
+            <div class="help-text">
+                <span data-i18n="demand_legend">Legend: Demand = estimated service requests</span><br>
+                <small data-i18n="data_source_note">Note: Data from /api/gemini demand_forecast</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Content: Wage Floors -->
+    <div id="wages" class="section-content">
+        <div class="section-header">
+            <h2 class="section-title" data-i18n="wage_floors_title">Minimum Wage Floors by Trade</h2>
+        </div>
+        <p class="help-text" style="margin-bottom: 1rem;" data-i18n="wage_floors_desc">
+            These minimums prevent exploitation. No job offer or bid can go below these amounts.
+        </p>
+
+        <div id="wagesList">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+
+    <!-- Tab Content: Settings -->
+    <div id="settings" class="section-content">
+        <div class="section-header">
+            <h2 class="section-title" data-i18n="platform_settings_title">Platform Settings</h2>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title" data-i18n="platform_fee_title">Platform Fee (₹)</h3>
+            <p class="help-text" style="margin-bottom: 1rem;" data-i18n="platform_fee_note">Fee defaults to ₹0. Can be set as a flat fee of ₹5-10. Never a percentage.</p>
+            <div class="input-group">
+                <input type="number" id="settingFee" class="form-control" min="0" max="10" step="1" value="0">
+                <button class="btn btn-primary" id="saveFeeBtn" data-i18n="btn_save">Save</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title" data-i18n="welfare_pct_title">Welfare Contribution (%)</h3>
+            <p class="help-text" style="margin-bottom: 1rem;" data-i18n="welfare_pct_note">Added on top of base fare, routed to Cooperative Worker Welfare Fund.</p>
+            <div class="input-group">
+                <input type="number" id="settingWelfare" class="form-control" min="1" max="5" step="0.5" value="2">
+                <button class="btn btn-primary" id="saveWelfareBtn" data-i18n="btn_save">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Content: Alerts -->
+    <div id="alerts" class="section-content">
+        <div class="section-header" style="color: var(--danger);">
+            <h2 class="section-title" data-i18n="sos_alerts_title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+                SOS Alerts
+            </h2>
+        </div>
+        <div id="sosList">
+            <!-- Populated by JS -->
+        </div>
+
+        <div class="section-header" style="margin-top: 2rem;">
+            <h2 class="section-title" data-i18n="grievances_title">Grievances</h2>
+        </div>
+        <div id="grievancesList">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Scripts -->
+<!-- In a real app these would be real scripts -->
+<script>
+    // Mock SahakarDB for demo
+    window.SahakarDB = {
+        getCurrentUser: () => ({ id: 1, email: 'admin@sahakar.local', role: 'admin', name: 'Admin User' }),
+        getPendingWorkers: async () => [
+            {id: 101, name: 'Ramesh Kumar', email: 'ramesh@example.com', phone: '+919876543210', trade: 'Electrician', societyName: 'Mumbai Electrical Coop', itiCertUrl: '#', joinedAt: new Date(Date.now() - 86400000).toISOString()},
+            {id: 102, name: 'Suresh Singh', email: 'suresh@example.com', phone: '+919876543211', trade: 'Plumber', societyName: 'Pune Plumbers Union', itiCertUrl: '#', joinedAt: new Date(Date.now() - 172800000).toISOString()}
+        ],
+        approveWorker: async (id) => true,
+        getDemandForecast: async (trade) => {
+            const days = [];
+            const baseDate = new Date();
+            for (let i=0; i<7; i++) {
+                const d = new Date(baseDate);
+                d.setDate(d.getDate() + i);
+                days.push({
+                    date: d.toISOString(),
+                    demand: Math.floor(Math.random() * 80) + 20,
+                    shift_advice: ['Morning peak', 'Evening rush', 'Low demand'][Math.floor(Math.random()*3)]
+                });
+            }
+            return { days };
+        },
+        getWageFloors: async () => [
+            {trade: 'Electrician', minAmount: 500},
+            {trade: 'Plumber', minAmount: 450},
+            {trade: 'Carpenter', minAmount: 600}
+        ],
+        updateWageFloor: async (trade, amount) => true,
+        getSettings: async () => ({ platform_fee: 0, welfare_pct: 2.0 }),
+        updateSettings: async (key, value) => true,
+        getSosAlerts: async () => [
+            {id: 1, userId: 201, lat: '19.0760', lng: '72.8777', resolved: false, createdAt: new Date(Date.now() - 3600000).toISOString(), userName: 'Amit Patel'}
+        ],
+        getGrievances: async () => [
+            {id: 1, userId: 202, subject: 'Payment Delay', body: 'I have not received payment for my last 2 jobs.', status: 'open', createdAt: new Date(Date.now() - 86400000).toISOString(), userName: 'Vikram Jadhav'}
+        ]
+    };
+    window.I18n = {
+        init: () => {},
+        t: (key) => key
+    };
+</script>
+<script src="js/admin.js" defer></script>
+</body>
+</html>
