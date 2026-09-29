@@ -1,109 +1,569 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title data-i18n="track.title">Tracking - Sahakar Seva</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" defer></script>
-    <style>
-        .app-container { max-width: 480px; margin: 0 auto; padding: 16px; font-family: system-ui, -apple-system, sans-serif; background-color: #f8fafc; min-height: 100vh;}
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0; background: white; padding: 16px; border-radius: 12px; }
-        .logo { font-size: 20px; font-weight: bold; color: #2D6A4F; display: flex; align-items: center; gap: 8px; }
-        .header-actions { display: flex; gap: 12px; align-items: center; }
-        .lang-select { padding: 6px; border-radius: 4px; border: 1px solid #cbd5e1; }
-        .btn-logout { background: none; border: none; color: #64748b; cursor: pointer; padding: 8px; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Live Driver Tracking — Sahakar Seva</title>
 
-        .page-title { font-size: 20px; font-weight: bold; color: #1e293b; margin-bottom: 16px; }
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-        .status-steps { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; position: relative; padding: 0 10px;}
-        .status-steps::before { content: ''; position: absolute; top: 12px; left: 20px; right: 20px; height: 2px; background: #e2e8f0; z-index: 1; }
-        .step { display: flex; flex-direction: column; align-items: center; gap: 8px; position: relative; z-index: 2; width: 60px; }
-        .step-dot { width: 24px; height: 24px; border-radius: 50%; background: #e2e8f0; border: 2px solid white; display: flex; align-items: center; justify-content: center; }
-        .step.active .step-dot { background: #22c55e; }
-        .step-label { font-size: 11px; font-weight: 500; color: #64748b; text-align: center; }
-        .step.active .step-label { color: #22c55e; font-weight: bold; }
+  <link rel="stylesheet" href="/css/style.css">
+  <!-- Leaflet Map CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 
-        .map-container { height: 300px; width: 100%; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 24px; overflow: hidden; z-index: 1; }
-        
-        .worker-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .worker-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px;}
-        .worker-avatar { width: 48px; height: 48px; border-radius: 50%; background: #2D6A4F; color: white; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; }
-        .worker-details { flex: 1; }
-        .worker-name { font-weight: bold; font-size: 16px; color: #1e293b; }
-        .worker-meta { font-size: 13px; color: #64748b; }
-        .call-btn { width: 40px; height: 40px; border-radius: 50%; background: #f0fdf4; color: #15803d; display: flex; align-items: center; justify-content: center; text-decoration: none; border: 1px solid #bbf7d0; }
-        
-        .eta-banner { background: #f8fafc; padding: 12px; border-radius: 8px; text-align: center; font-weight: 500; color: #334155; margin-bottom: 12px; border: 1px solid #e2e8f0; }
-        
-        .btn-primary { width: 100%; background-color: #2D6A4F; color: white; border: none; border-radius: 8px; padding: 16px; font-size: 16px; font-weight: bold; cursor: pointer; text-align: center; display: none; }
-    </style>
+  <style>
+    :root {
+      --color-primary: #2D6A4F;
+      --color-primary-light: #74C69D;
+      --color-secondary: #1B4965;
+      --color-bg: #F8FAFB;
+      --color-surface: #FFFFFF;
+      --color-text: #1A1A1A;
+      --color-text-muted: #6B7280;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      background-color: #fafaf8;
+      background-image: 
+        radial-gradient(at 0% 0%, hsla(145, 41%, 41%, 0.12) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, hsla(88, 50%, 65%, 0.12) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, hsla(202, 58%, 25%, 0.1) 0px, transparent 50%);
+      background-attachment: fixed;
+      margin: 0;
+      padding: 0 16px 80px 16px;
+      color: var(--color-text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .track-container {
+      max-width: 520px;
+      margin: 0 auto;
+      padding-top: 10px;
+    }
+
+    /* Glass Panels */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: 22px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.04);
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+
+    /* Live Telemetry Map Container */
+    .map-wrapper {
+      position: relative;
+      width: 100%;
+      height: 330px;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1.5px solid rgba(0,0,0,0.08);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+      margin-bottom: 18px;
+      background: #e2e8f0;
+    }
+
+    #map {
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    #googleMap {
+      display: none;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    /* Floating Map Badges */
+    .map-overlay-badge {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      border-radius: 30px;
+      padding: 6px 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--color-primary);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+      border: 1px solid rgba(45,106,79,0.2);
+    }
+
+    .live-pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #059669;
+      animation: live-pulse 1.4s infinite;
+    }
+
+    @keyframes live-pulse {
+      0% { transform: scale(0.9); opacity: 0.6; }
+      50% { transform: scale(1.4); opacity: 1; }
+      100% { transform: scale(0.9); opacity: 0.6; }
+    }
+
+    .map-toggle-btn {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      border-radius: 20px;
+      padding: 6px 12px;
+      border: 1px solid rgba(0,0,0,0.1);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--color-secondary);
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transition: all 0.2s;
+    }
+
+    .map-toggle-btn:hover {
+      background: white;
+      transform: translateY(-1px);
+    }
+
+    /* Telemetry HUD Grid */
+    .telemetry-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .telemetry-item {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(0,0,0,0.06);
+      border-radius: 14px;
+      padding: 10px 8px;
+      text-align: center;
+    }
+
+    .telemetry-val {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--color-primary);
+      display: block;
+      margin-top: 2px;
+    }
+
+    .telemetry-lbl {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+      letter-spacing: 0.5px;
+    }
+
+    /* Status Timeline */
+    .status-timeline {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      margin: 16px 0 20px 0;
+      padding: 0 10px;
+    }
+
+    .status-timeline::before {
+      content: '';
+      position: absolute;
+      top: 14px;
+      left: 30px;
+      right: 30px;
+      height: 3px;
+      background: #e2e8f0;
+      z-index: 1;
+    }
+
+    .status-step-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+      z-index: 2;
+      width: 72px;
+    }
+
+    .status-step-circle {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: white;
+      border: 3px solid #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+      color: #94a3b8;
+      transition: all 0.3s;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    .status-step-node.active .status-step-circle {
+      background: var(--color-primary);
+      border-color: #74C69D;
+      color: white;
+      box-shadow: 0 4px 14px rgba(45,106,79,0.4);
+    }
+
+    .status-step-text {
+      font-size: 11px;
+      font-weight: 700;
+      color: #64748b;
+      text-align: center;
+    }
+
+    .status-step-node.active .status-step-text {
+      color: var(--color-primary);
+      font-weight: 800;
+    }
+
+    /* Gemini Live AI Card */
+    .gemini-ai-card {
+      background: linear-gradient(135deg, #1B4332 0%, #2D6A4F 60%, #1B4965 100%);
+      border-radius: 18px;
+      padding: 16px 18px;
+      color: white;
+      margin-bottom: 18px;
+      box-shadow: 0 10px 28px rgba(45, 106, 79, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .gemini-ai-card::before {
+      content: '';
+      position: absolute;
+      top: -30px;
+      right: -30px;
+      width: 100px;
+      height: 100px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 50%;
+    }
+
+    .gemini-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .gemini-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: #74C69D;
+    }
+
+    .gemini-commentary {
+      font-size: 14px;
+      line-height: 1.5;
+      font-weight: 500;
+      color: #F8FAFB;
+      margin: 0 0 12px 0;
+    }
+
+    .gemini-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .gemini-btn {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .gemini-btn:hover {
+      background: rgba(255,255,255,0.28);
+      transform: translateY(-1px);
+    }
+
+    /* Worker Profile Card */
+    .driver-card {
+      background: white;
+      border-radius: 18px;
+      padding: 16px;
+      border: 1px solid rgba(0,0,0,0.06);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .driver-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .driver-avatar-box {
+      position: relative;
+    }
+
+    .driver-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 900;
+      box-shadow: 0 4px 12px rgba(45,106,79,0.3);
+    }
+
+    .driver-status-dot {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #059669;
+      border: 2px solid white;
+    }
+
+    .call-action-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #ECFDF5;
+      color: #059669;
+      border: 1.5px solid #A7F3D0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .call-action-btn:hover {
+      background: #059669;
+      color: white;
+      transform: scale(1.05);
+    }
+  </style>
 </head>
 <body>
-    <div class="app-container">
-        <header class="header">
-            <div class="logo">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                <span data-i18n="app.name">सहकार सेवा</span>
-            </div>
-            <div class="header-actions">
-                <select id="lang-select" class="lang-select" aria-label="Select Language">
-                    <option value="en">EN</option>
-                    <option value="hi">HI</option>
-                    <option value="mr">MR</option>
-                </select>
-                <button id="btn-logout" class="btn-logout" aria-label="Logout" data-i18n="nav.logout">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                </button>
-            </div>
-        </header>
+  <div class="track-container">
+    
+    <!-- Header -->
+    <header style="display: flex; justify-content: space-between; align-items: center; padding: 14px 0 10px 0;">
+      <a href="/customer-dashboard.html" style="display: flex; align-items: center; gap: 8px; text-decoration: none;">
+        <svg viewBox="0 0 24 24" fill="var(--color-primary)" width="26" height="26">
+          <path d="M12 2L2 22h20L12 2zm0 3.8l7 14.2H5l7-14.2z"/>
+        </svg>
+        <span style="font-weight: 900; font-size: 20px; color: var(--color-primary);">Sahakar Seva</span>
+      </a>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <a href="/customer-dashboard.html" class="btn btn-outline btn-small" style="padding: 5px 12px; font-size: 12px; border-radius: 12px; font-weight: 700; text-decoration: none;">
+          ← My Hub
+        </a>
+        <button id="btn-logout" class="btn btn-outline btn-small" style="border-color:var(--color-danger); color:var(--color-danger); padding: 5px 10px; border-radius: 12px; font-size: 12px;">Logout</button>
+      </div>
+    </header>
 
-        <main>
-            <h1 class="page-title" data-i18n="track.title">Tracking</h1>
-            
-            <div class="status-steps" id="status-steps">
-                <div class="step active" data-status="accepted">
-                    <div class="step-dot"></div>
-                    <div class="step-label" data-i18n="track.status.accepted">Accepted</div>
-                </div>
-                <div class="step" data-status="en_route">
-                    <div class="step-dot"></div>
-                    <div class="step-label" data-i18n="track.status.en_route">On the way</div>
-                </div>
-                <div class="step" data-status="in_progress">
-                    <div class="step-dot"></div>
-                    <div class="step-label" data-i18n="track.status.in_progress">Working</div>
-                </div>
-                <div class="step" data-status="completed">
-                    <div class="step-dot"></div>
-                    <div class="step-label" data-i18n="track.status.completed">Done</div>
-                </div>
-            </div>
+    <!-- Main Glass Container -->
+    <div class="glass-card">
+      
+      <!-- Top Title & Job Header -->
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+        <div>
+          <div style="font-size: 11px; font-weight: 800; color: var(--color-primary); text-transform: uppercase; letter-spacing: 0.5px;">
+            MLH 2026 Cooperative Telemetry
+          </div>
+          <h1 style="font-size: 22px; font-weight: 900; color: var(--color-secondary); margin: 2px 0 0 0;">
+            Live Service Tracking
+          </h1>
+        </div>
+        <span id="jobTradeBadge" style="background: rgba(45,106,79,0.12); color: var(--color-primary); font-weight: 800; font-size: 12px; padding: 4px 12px; border-radius: 20px;">
+          ⚡ Electrician
+        </span>
+      </div>
 
-            <div id="map" class="map-container"></div>
+      <div style="font-size: 13px; color: var(--color-text-muted); margin-bottom: 16px;">
+        Destination: <strong id="jobAddressText" style="color: var(--color-text);">Sector 62, Noida</strong> • Offer: <strong id="jobOfferText" style="color: var(--color-primary);">₹400</strong>
+      </div>
 
-            <div class="worker-card">
-                <div class="eta-banner" id="eta-banner">ETA: 10 mins</div>
-                <div class="worker-header">
-                    <div class="worker-avatar" id="worker-avatar">W</div>
-                    <div class="worker-details">
-                        <div class="worker-name" id="worker-name">Worker Name</div>
-                        <div class="worker-meta" id="worker-society">Society Name</div>
-                    </div>
-                    <a href="tel:+919876543210" class="call-btn" aria-label="Call Worker">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                    </a>
-                </div>
-                <button id="btn-complete" class="btn-primary" data-i18n="track.mark_complete">Mark Complete</button>
+      <!-- 4-Step Status Timeline -->
+      <div class="status-timeline" id="statusTimeline">
+        <div class="status-step-node active" id="step-accepted" data-status="accepted">
+          <div class="status-step-circle">1</div>
+          <span class="status-step-text">Accepted</span>
+        </div>
+        <div class="status-step-node active" id="step-en_route" data-status="en_route">
+          <div class="status-step-circle">2</div>
+          <span class="status-step-text">On Way</span>
+        </div>
+        <div class="status-step-node" id="step-in_progress" data-status="in_progress">
+          <div class="status-step-circle">3</div>
+          <span class="status-step-text">Working</span>
+        </div>
+        <div class="status-step-node" id="step-completed" data-status="completed">
+          <div class="status-step-circle">4</div>
+          <span class="status-step-text">Done</span>
+        </div>
+      </div>
+
+      <!-- Telemetry Speed / ETA Grid -->
+      <div class="telemetry-grid">
+        <div class="telemetry-item">
+          <span class="telemetry-lbl">ETA</span>
+          <span class="telemetry-val" id="telemetryEta">6 min</span>
+        </div>
+        <div class="telemetry-item">
+          <span class="telemetry-lbl">Distance</span>
+          <span class="telemetry-val" id="telemetryDist">1.8 km</span>
+        </div>
+        <div class="telemetry-item">
+          <span class="telemetry-lbl">Speed</span>
+          <span class="telemetry-val" id="telemetrySpeed">24 km/h</span>
+        </div>
+        <div class="telemetry-item">
+          <span class="telemetry-lbl">Traffic</span>
+          <span class="telemetry-val" style="color: #059669; font-size: 15px;" id="telemetryTraffic">🟢 Clear</span>
+        </div>
+      </div>
+
+      <!-- Map Viewport -->
+      <div class="map-wrapper">
+        <div class="map-overlay-badge">
+          <div class="live-pulse-dot"></div>
+          <span id="mapOverlayText">Live GPS • Worker Moving</span>
+        </div>
+        <button type="button" class="map-toggle-btn" id="btnToggleMapEngine">
+          🗺️ Switch to Google Maps
+        </button>
+
+        <!-- Leaflet Map Canvas (Default & Rock-Solid) -->
+        <div id="map"></div>
+        <!-- Google Maps Canvas (Optional Google Platform Layer) -->
+        <div id="googleMap"></div>
+      </div>
+
+      <!-- Gemini Live Telemetry & Traffic AI Card -->
+      <div class="gemini-ai-card">
+        <div class="gemini-header">
+          <div class="gemini-title">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+            </svg>
+            <span>Gemini AI Telemetry Update</span>
+          </div>
+          <span id="aiConfidenceBadge" style="font-size: 10px; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 10px;">Live Telemetry</span>
+        </div>
+        <p class="gemini-commentary" id="geminiCommentary">
+          Worker Suresh Yadav is en route via Sector 62 Main Bypass (1.8 km away). Green corridor detected, estimated arrival in 6 minutes.
+        </p>
+        <div class="gemini-actions">
+          <button type="button" class="gemini-btn" id="btnSpeakAi">
+            <span>🔊 Announce Status</span>
+          </button>
+          <button type="button" class="gemini-btn" id="btnRefreshAi">
+            <span>✨ Refresh Gemini AI</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Driver & Cooperative Society Profile Card -->
+      <div class="driver-card">
+        <div class="driver-info">
+          <div class="driver-avatar-box">
+            <div class="driver-avatar" id="driverAvatar">S</div>
+            <div class="driver-status-dot"></div>
+          </div>
+          <div>
+            <div style="font-weight: 800; font-size: 16px; color: var(--color-secondary);" id="driverName">Suresh Yadav</div>
+            <div style="font-size: 12px; color: var(--color-text-muted);" id="driverSociety">Jan Seva Society #12 • ITI Certified</div>
+            <div style="display: flex; align-items: center; gap: 4px; margin-top: 4px;">
+              <span style="font-size: 11px; background: rgba(45,106,79,0.1); color: var(--color-primary); font-weight: 800; padding: 2px 8px; border-radius: 10px;" id="driverTrustBadge">
+                ★ 96.3 Trust Score (60/30/10)
+              </span>
             </div>
-        </main>
+          </div>
+        </div>
+        <a href="tel:+919876543210" class="call-action-btn" title="Call Worker directly">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-2.2 2.2a15.053 15.053 0 01-6.59-6.59l2.2-2.21a.96.96 0 00.25-1.01A11.36 11.36 0 018.57 3.9c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.51c0-.56-.45-1.01-.99-1.01z"/>
+          </svg>
+        </a>
+      </div>
+
+      <!-- Driver Actions (Only shown if worker role) -->
+      <div id="workerActionPanel" style="display: none; margin-top: 14px;">
+        <button id="btnMarkArrived" class="btn btn-secondary" style="width: 100%; padding: 14px; border-radius: 14px; font-weight: 800; margin-bottom: 8px;">
+          📍 Mark Arrived at Customer Site
+        </button>
+        <button id="btnMarkComplete" class="btn btn-primary" style="width: 100%; padding: 14px; border-radius: 14px; font-weight: 800;">
+          ✓ Mark Job Completed & Open Invoice
+        </button>
+      </div>
+
+      <!-- Customer Simulator / Advance Demo Bar -->
+      <div style="display: flex; gap: 8px; margin-top: 10px;">
+        <button type="button" id="btnAdvanceStatus" class="btn btn-outline" style="flex: 1; padding: 10px; font-size: 12px; font-weight: 700; border-radius: 12px;">
+          ⏭️ Advance Status
+        </button>
+        <button type="button" id="btnOpenInvoice" class="btn btn-outline" style="flex: 1; padding: 10px; font-size: 12px; font-weight: 700; border-radius: 12px;">
+          🧾 View Invoice
+        </button>
+      </div>
+
     </div>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <script src="/js/supabase-client.js"></script>
-    <script src="/js/i18n.js"></script>
-    <script src="/js/voice.js"></script>
-    <script src="/js/track.js" defer></script>
+  </div>
+
+  <!-- Leaflet Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+  <!-- Core Scripts -->
+  <script src="/js/config.local.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/supabase-client.js"></script>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/voice.js"></script>
+  <script src="/js/voice-assistant.js"></script>
+  <script src="/js/track.js" defer></script>
 </body>
 </html>

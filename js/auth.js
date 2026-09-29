@@ -1,14 +1,33 @@
 document.addEventListener('DOMContentLoaded', async () => {
+  const isCustomerPage = window.location.pathname.includes('customer-login');
+  const isWorkerPage = window.location.pathname.includes('worker-login');
+
   // Check if already logged in
   if (window.SahakarDB) {
     const user = await window.SahakarDB.getCurrentUser();
     if (user) {
-      redirectUser(user.role);
-      return;
+      if (isCustomerPage) {
+        // If on customer login page, only redirect if actually a customer!
+        if (user.role === 'customer') {
+          window.location.href = '/customer-dashboard.html';
+          return;
+        }
+        // If logged in as worker, do NOT redirect to onboarding from customer login page!
+      } else if (isWorkerPage) {
+        // If on worker login page, only redirect if actually a worker!
+        if (user.role === 'worker') {
+          const onboarded = localStorage.getItem('sahakar_worker_profile');
+          window.location.href = onboarded ? '/dashboard.html' : '/onboarding.html';
+          return;
+        }
+      } else {
+        redirectUser(user.role);
+        return;
+      }
     }
   }
 
-  // Set up i18n and Language selector if they exist
+  // Set up i18n
   if (window.I18n) {
     window.I18n.applyToPage();
     setupLanguageSelector();
@@ -30,6 +49,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  // Handle Sign In
   if (signinForm) {
     signinForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -38,15 +58,24 @@ document.addEventListener('DOMContentLoaded', async () => {
       
       try {
         const user = await window.SahakarDB.signIn(email, password);
-        redirectUser(user.role);
+        if (isCustomerPage) {
+          window.location.href = '/customer-dashboard.html';
+        } else if (isWorkerPage) {
+          const onboarded = localStorage.getItem('sahakar_worker_profile');
+          window.location.href = onboarded ? '/dashboard.html' : '/onboarding.html';
+        } else {
+          redirectUser(user.role);
+        }
       } catch (err) {
+        console.error(err);
         if (errorMsg) {
-          errorMsg.textContent = window.I18n ? window.I18n.t('error') + ': Invalid credentials.' : 'Invalid credentials.';
+          errorMsg.textContent = err.message || (window.I18n ? window.I18n.t('error') + ': Invalid credentials.' : 'Invalid credentials.');
         }
       }
     });
   }
 
+  // Handle Sign Up
   if (signupForm) {
     signupForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -54,21 +83,30 @@ document.addEventListener('DOMContentLoaded', async () => {
       const email = document.getElementById('signup-email').value;
       const password = document.getElementById('signup-password').value;
       
-      let role = 'customer';
-      const roleRadios = document.getElementsByName('role');
-      for (const r of roleRadios) {
-        if (r.checked) {
-          role = r.value;
-          break;
+      let role = isCustomerPage ? 'customer' : (isWorkerPage ? 'worker' : 'customer');
+      const roleInput = document.querySelector('input[name="role"]');
+      if (roleInput) {
+        if (roleInput.type === 'hidden') {
+          role = roleInput.value;
+        } else {
+          const checkedRadio = document.querySelector('input[name="role"]:checked');
+          if (checkedRadio) role = checkedRadio.value;
         }
       }
       
       try {
         const user = await window.SahakarDB.signUp(email, password, role, name);
-        redirectUser(user.role);
+        if (isCustomerPage) {
+          window.location.href = '/customer-dashboard.html';
+        } else if (isWorkerPage) {
+          window.location.href = '/onboarding.html';
+        } else {
+          redirectUser(user.role);
+        }
       } catch (err) {
+        console.error(err);
         if (errorMsg) {
-          errorMsg.textContent = window.I18n ? window.I18n.t('error') : 'Signup failed.';
+          errorMsg.textContent = err.message || (window.I18n ? window.I18n.t('error') : 'Signup failed.');
         }
       }
     });
@@ -76,11 +114,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function redirectUser(role) {
     if (role === 'admin') {
-      window.location.href = 'admin.html';
+      window.location.href = '/admin.html';
     } else if (role === 'worker') {
-      window.location.href = 'dashboard.html';
+      const onboarded = localStorage.getItem('sahakar_worker_profile');
+      window.location.href = onboarded ? '/dashboard.html' : '/onboarding.html';
     } else {
-      window.location.href = 'booking.html';
+      window.location.href = '/customer-dashboard.html';
     }
   }
 

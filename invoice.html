@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="invoice_title">Invoice & Rating - Sahakar Seva</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
     <style>
-        .container { max-width: 480px; margin: 0 auto; padding: 16px; background: #f8f9fa; min-height: 100vh; }
+        * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; }
+        .container { max-width: 480px; margin: 0 auto; padding: 16px; background: #f8f9fa; min-height: 100vh; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; }
         .header-title { display: flex; align-items: center; justify-content: center; color: #2D6A4F; margin-bottom: 24px; }
         .header-title svg { width: 32px; height: 32px; margin-right: 8px; fill: currentColor; }
         
@@ -55,10 +59,29 @@
 <body>
     <div class="container">
         <div id="invoice-view">
-            <h1 class="header-title">
-                <svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
-                <span data-i18n="invoice">Invoice</span>
-            </h1>
+            <!-- Header bar with Back button -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <a href="/customer-dashboard.html" style="text-decoration: none; color: #2D6A4F; font-size: 13px; font-weight: 800; display: inline-flex; align-items: center; gap: 4px;">
+                    ← Back to Dashboard
+                </a>
+                <span id="inv-job-badge" style="background: rgba(45,106,79,0.12); color: #2D6A4F; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 12px;">
+                    ⚡ Electrician Service
+                </span>
+            </div>
+
+            <!-- Job Context Card -->
+            <div id="inv-job-card" style="background: white; border-radius: 14px; padding: 14px 18px; margin-bottom: 16px; border: 1px solid #e5e7eb; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div>
+                        <strong id="inv-job-trade" style="font-size: 15px; color: #1B4965;">Electrician Service</strong>
+                        <div id="inv-job-address" style="font-size: 12px; color: #6b7280; margin-top: 2px;">📍 Sector 62, Noida</div>
+                    </div>
+                    <span id="inv-job-id" style="font-size: 11px; color: #9ca3af; font-family: monospace;">job_1790672253294</span>
+                </div>
+                <div id="inv-job-desc" style="font-size: 13px; color: #374151; margin-top: 8px; border-top: 1px dashed #f3f4f6; padding-top: 8px;">
+                    Fix main switchboard and inspect ceiling fan
+                </div>
+            </div>
 
             <div class="invoice-card">
                 <div class="invoice-row">

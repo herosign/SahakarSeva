@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title data-i18n="bids.title">Incoming Bids - Sahakar Seva</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
     <style>
-        .app-container { max-width: 480px; margin: 0 auto; padding: 16px; font-family: system-ui, -apple-system, sans-serif; background-color: #f8fafc; min-height: 100vh;}
+        * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; }
+        .app-container { max-width: 480px; margin: 0 auto; padding: 16px; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; background-color: #f8fafc; min-height: 100vh;}
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0; background: white; padding: 16px; border-radius: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);}
         .logo { font-size: 20px; font-weight: bold; color: #2D6A4F; display: flex; align-items: center; gap: 8px; }
         .header-actions { display: flex; gap: 12px; align-items: center; }
@@ -61,6 +65,7 @@
                 <span data-i18n="app.name">सहकार सेवा</span>
             </div>
             <div class="header-actions">
+        <button id="btn-logout" class="btn btn-outline btn-small" style="border-color:var(--color-danger); color:var(--color-danger);">Logout</button>
                 <select id="lang-select" class="lang-select" aria-label="Select Language">
                     <option value="en">EN</option>
                     <option value="hi">HI</option>

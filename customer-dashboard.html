@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Customer Hub — Sahakar Seva</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    body {
+      background-color: #fafaf8;
+      background-image: 
+        radial-gradient(at 0% 0%, hsla(145, 41%, 41%, 0.14) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, hsla(88, 50%, 65%, 0.14) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, hsla(145, 41%, 41%, 0.08) 0px, transparent 50%),
+        radial-gradient(at 0% 100%, hsla(202, 58%, 25%, 0.08) 0px, transparent 50%);
+      background-attachment: fixed;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      margin: 0;
+      padding: 0 16px 80px 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .hub-container {
+      max-width: 580px;
+      margin: 0 auto;
+    }
+
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0 10px 0;
+    }
+
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: 24px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.05);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .hub-tabs {
+      display: flex;
+      background: rgba(0,0,0,0.05);
+      border-radius: 16px;
+      padding: 4px;
+      margin-bottom: 20px;
+    }
+
+    .hub-tab-btn {
+      flex: 1;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 800;
+      text-align: center;
+      border-radius: 12px;
+      border: none;
+      background: transparent;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .hub-tab-btn.active {
+      background: white;
+      color: var(--color-primary);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    .trade-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .trade-tile {
+      background: white;
+      border: 1.5px solid rgba(0,0,0,0.06);
+      border-radius: 14px;
+      padding: 12px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+      transition: all 0.2s;
+    }
+
+    .trade-tile.active {
+      border-color: var(--color-primary);
+      background: rgba(45, 106, 79, 0.08);
+      color: var(--color-primary);
+      box-shadow: 0 4px 12px rgba(45,106,79,0.15);
+    }
+
+    .job-item-card {
+      background: white;
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 16px;
+      border: 1.5px solid rgba(0,0,0,0.06);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.03);
+      position: relative;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 12px;
+      text-transform: uppercase;
+    }
+
+    .status-open {
+      background: rgba(217, 119, 6, 0.12);
+      color: var(--color-warning);
+    }
+
+    .status-assigned {
+      background: rgba(27, 73, 101, 0.12);
+      color: var(--color-secondary);
+    }
+
+    .status-completed {
+      background: rgba(5, 150, 105, 0.12);
+      color: var(--color-success);
+    }
+
+    .custom-input {
+      width: 100%;
+      background: white;
+      border: 1.5px solid rgba(0,0,0,0.08);
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-size: 14px;
+      box-sizing: border-box;
+      transition: all 0.2s;
+    }
+
+    .custom-input:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(45,106,79,0.15);
+    }
+
+    .bid-row {
+      background: rgba(0,0,0,0.02);
+      border: 1px solid rgba(0,0,0,0.06);
+      border-radius: 14px;
+      padding: 14px;
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      padding: 16px;
+    }
+
+    .modal-card {
+      background: white;
+      border-radius: 24px;
+      padding: 24px;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+  <div class="hub-container">
+    
+    <!-- Top Header -->
+    <header class="app-header">
+      <a href="/" style="display: flex; align-items: center; gap: 8px; text-decoration: none;">
+        <svg viewBox="0 0 24 24" fill="var(--color-primary)" width="28" height="28">
+          <path d="M12 2L2 22h20L12 2zm0 3.8l7 14.2H5l7-14.2z"/>
+        </svg>
+        <span style="font-weight: 800; font-size: 22px; color: var(--color-primary);">Sahakar Seva</span>
+      </a>
+
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span id="customer-name-badge" style="font-size: 12px; font-weight: 800; color: var(--color-primary); background: rgba(45,106,79,0.1); padding: 4px 10px; border-radius: 20px;">
+          Customer
+        </span>
+        <button id="btn-logout" class="btn btn-outline btn-small" style="border-color:var(--color-danger); color:var(--color-danger); padding:4px 8px; border-radius:12px; font-size:12px; background:white; cursor:pointer;">Logout</button>
+      </div>
+    </header>
+
+    <!-- Customer Welcome Card -->
+    <div style="background: linear-gradient(135deg, var(--color-primary), #1B4332); color: white; border-radius: 20px; padding: 20px 24px; margin-bottom: 20px; box-shadow: 0 8px 24px rgba(45,106,79,0.25);">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <span style="font-size: 11px; text-transform: uppercase; font-weight: 800; opacity: 0.85;">Customer Portal</span>
+          <h2 style="margin: 2px 0 4px 0; font-size: 22px; font-weight: 900;"><span id="greetingName">Welcome</span></h2>
+          <p style="margin: 0; font-size: 13px; opacity: 0.9;">Post, edit, review local jobs, and track live bids from society workers.</p>
+        </div>
+        <div style="background: rgba(255,255,255,0.15); border-radius: 14px; padding: 8px 12px; text-align: center;">
+          <span style="display: block; font-size: 10px; font-weight: 800; opacity: 0.85; text-transform: uppercase;">Commission</span>
+          <span style="font-size: 18px; font-weight: 900;">0%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hub Navigation Tabs -->
+    <div class="hub-tabs">
+      <button class="hub-tab-btn active" id="tabPostJob">➕ Post a Job</button>
+      <button class="hub-tab-btn" id="tabMyJobs">📋 My Active Jobs (<span id="myJobsCount">0</span>)</button>
+    </div>
+
+    <!-- TAB 1: POST JOB SECTION -->
+    <div id="sectionPostJob" class="glass-panel">
+      <h3 style="margin: 0 0 4px 0; font-size: 18px; font-weight: 800; color: var(--color-secondary);">
+        Post Service Request by Location
+      </h3>
+      <p style="margin: 0 0 16px 0; font-size: 13px; color: var(--color-text-muted);">
+        Broadcast directly to nearby cooperative society workers within your geofence.
+      </p>
+
+      <!-- Refined Voice AI Assistant -->
+      <div style="background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(240,249,245,0.85)); border-radius: 20px; padding: 20px 22px; margin-bottom: 24px; border: 1.5px solid rgba(45,106,79,0.2); box-shadow: 0 8px 24px rgba(45,106,79,0.06);">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 15px; font-weight: 800; color: var(--color-primary);">🎙️ Voice Auto-Fill</span>
+              <span style="font-size: 11px; background: rgba(45,106,79,0.12); color: var(--color-primary); font-weight: 800; padding: 2px 8px; border-radius: 12px;">Gemini 3.5</span>
+            </div>
+            <p style="margin: 4px 0 0 0; font-size: 13px; color: var(--color-text-muted); line-height: 1.4;">
+              Speak your request or choose an instant test prompt below.
+            </p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+            <button type="button" id="btnDashMic" class="btn btn-primary" style="padding: 10px 18px; font-size: 13px; font-weight: 800; border-radius: 14px; box-shadow: 0 4px 14px rgba(45,106,79,0.25); display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
+              <span id="dashMicIcon">🎤</span> <span id="dashMicText">Tap to Speak</span>
+            </button>
+            <a href="/booking.html" class="btn btn-outline btn-small" title="Dedicated voice booking screen" style="padding: 10px 14px; font-size: 12px; font-weight: 700; text-decoration: none; border-radius: 14px;">
+              Full Voice UI ↗
+            </a>
+          </div>
+        </div>
+
+        <!-- Live Status Bar (Shows only when active/result) -->
+        <div id="dashVoiceStatus" style="display: none; padding: 10px 14px; background: white; border-radius: 12px; border: 1px solid rgba(45,106,79,0.2); font-size: 13px; color: var(--color-primary); font-weight: 600; margin-top: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+        </div>
+
+        <!-- Clean, uncluttered Quick Test Chips -->
+        <div style="margin-top: 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+          <span style="font-size: 11px; font-weight: 800; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Quick Test:</span>
+          <button type="button" class="dash-sample-chip" data-lang="hi" data-sample="मुझे लाजपत नगर में पंखा ठीक करने के लिए इलेक्ट्रीशियन चाहिए, बजट 400 रुपये है" style="background: white; border: 1px solid rgba(0,0,0,0.1); border-radius: 20px; padding: 5px 12px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+            ⚡ Electrician (Hindi ₹400)
+          </button>
+          <button type="button" class="dash-sample-chip" data-lang="ta" data-sample="எனக்கு அடையாரில் குழாய் பழுதுபார்க்க பிளம்பர் வேண்டும், பட்ஜெட் 350 ரூபாய்" style="background: white; border: 1px solid rgba(0,0,0,0.1); border-radius: 20px; padding: 5px 12px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+            🔧 Plumber (Tamil ₹350)
+          </button>
+          <button type="button" class="dash-sample-chip" data-lang="te" data-sample="నాకు మాదాపూర్‌లో ఏసీ సర్వీసింగ్ కోసం టెక్నీషియన్ కావాలి, బడ్జెట్ 600 రూపాయలు" style="background: white; border: 1px solid rgba(0,0,0,0.1); border-radius: 20px; padding: 5px 12px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+            ❄️ AC Repair (Telugu ₹600)
+          </button>
+          <button type="button" class="dash-sample-chip" data-lang="bn" data-sample="আমার সল্টলেকে কাঠের টেবিল মেরামতের জন্য কার্পেন্টার দরকার, বাজেট ৫০০ টাকা" style="background: white; border: 1px solid rgba(0,0,0,0.1); border-radius: 20px; padding: 5px 12px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+            🔨 Carpenter (Bengali ₹500)
+          </button>
+        </div>
+      </div>
+
+      <form id="newJobForm">
+        <!-- Trade Category Selection -->
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--color-secondary); margin-bottom: 4px;">1. Select Service Category</label>
+          <div class="trade-grid" id="tradeGrid">
+            <div class="trade-tile active" data-trade="Electrician" data-floor="350">
+              <span>⚡ Electrician</span>
+            </div>
+            <div class="trade-tile" data-trade="Plumber" data-floor="300">
+              <span>🔧 Plumber</span>
+            </div>
+            <div class="trade-tile" data-trade="Carpenter" data-floor="300">
+              <span>🔨 Carpenter</span>
+            </div>
+            <div class="trade-tile" data-trade="Mason" data-floor="320">
+              <span>🧱 Mason</span>
+            </div>
+            <div class="trade-tile" data-trade="AC Repair" data-floor="350">
+              <span>❄️ AC Repair</span>
+            </div>
+            <div class="trade-tile" data-trade="Cleaning" data-floor="250">
+              <span>🧹 Cleaning</span>
+            </div>
+          </div>
+          <input type="hidden" id="selectedTrade" value="Electrician">
+        </div>
+
+        <!-- Location / Address -->
+        <div style="margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <label style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--color-secondary);">2. Service Location / Address</label>
+            <span style="font-size: 11px; color: var(--color-primary); font-weight: 700; cursor: pointer;" id="btnDetectGps">📍 Use GPS</span>
+          </div>
+          <input type="text" id="jobAddress" class="custom-input" placeholder="e.g. Sector 62, Noida (Flat 402, Block B)" value="Sector 62, Noida" required>
+        </div>
+
+        <!-- Task Details -->
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--color-secondary); margin-bottom: 4px;">3. Task Description</label>
+          <textarea id="jobDesc" class="custom-input" style="height: 70px; resize: none;" placeholder="e.g. Need help installing a new ceiling fan and checking living room switches..." required>Need help fixing switchboard and ceiling fan</textarea>
+        </div>
+
+        <!-- Offer Price with Fair Wage Guardrail -->
+        <div style="margin-bottom: 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
+            <label style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--color-secondary);">4. Your Offer Price (₹)</label>
+            <span id="wageFloorNotice" style="font-size: 11px; font-weight: 700; color: var(--color-primary);">Min Fair Floor: ₹350</span>
+          </div>
+          <input type="number" id="jobOffer" class="custom-input" placeholder="Enter amount in ₹" value="450" required min="100">
+        </div>
+
+        <button type="submit" id="btnSubmitJob" class="btn btn-primary" style="width: 100%; padding: 16px; font-size: 15px; font-weight: 800; border-radius: 14px; box-shadow: 0 8px 20px rgba(45,106,79,0.3); cursor: pointer;">
+          Broadcast Job to Nearby Workers →
+        </button>
+      </form>
+    </div>
+
+    <!-- TAB 2: MY JOBS & REVIEW SECTION -->
+    <div id="sectionMyJobs" class="glass-panel" style="display: none;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <div>
+          <h3 style="margin: 0; font-size: 18px; font-weight: 800; color: var(--color-secondary);">
+            My Service Postings
+          </h3>
+          <span style="font-size: 12px; color: var(--color-text-muted);">Manage, edit, or accept bids on your requests</span>
+        </div>
+        <button id="btnRefreshJobs" style="background: white; border: 1px solid rgba(0,0,0,0.1); border-radius: 10px; padding: 4px 10px; font-size: 12px; font-weight: 700; cursor: pointer;">
+          ↻ Refresh
+        </button>
+      </div>
+
+      <div id="jobsListContainer">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+
+    <!-- EDIT JOB MODAL -->
+    <div id="editJobModal" class="modal-overlay">
+      <div class="modal-card">
+        <h3 style="margin: 0 0 6px 0; font-size: 18px; font-weight: 800; color: var(--color-secondary);">Edit Service Posting</h3>
+        <p style="margin: 0 0 16px 0; font-size: 12px; color: var(--color-text-muted);">Update details or price to attract more society workers.</p>
+
+        <input type="hidden" id="editJobId">
+
+        <div style="margin-bottom: 12px;">
+          <label style="display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">Location / Address</label>
+          <input type="text" id="editJobAddress" class="custom-input" required>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <label style="display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">Task Details</label>
+          <textarea id="editJobDesc" class="custom-input" style="height: 70px; resize: none;" required></textarea>
+        </div>
+
+        <div style="margin-bottom: 18px;">
+          <label style="display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">Offer Price (₹)</label>
+          <input type="number" id="editJobOffer" class="custom-input" required min="100">
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+          <button id="btnCancelEdit" class="btn btn-outline" style="flex: 1; padding: 12px; border-radius: 12px;">Cancel</button>
+          <button id="btnSaveEdit" class="btn btn-primary" style="flex: 2; padding: 12px; border-radius: 12px; font-weight: 800;">Save Changes</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" style="position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); background: #1B4332; color: white; padding: 12px 24px; border-radius: 30px; font-size: 13px; font-weight: 700; display: none; z-index: 300; box-shadow: 0 8px 24px rgba(0,0,0,0.2);"></div>
+
+  </div>
+
+  <script src="/js/config.local.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/supabase-client.js"></script>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/voice.js"></script>
+  <script src="/js/voice-assistant.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Auth Guard for Customer Hub
+      if (!window.SahakarDB) return;
+      const user = await window.SahakarDB.getCurrentUser();
+      if (!user) {
+        window.location.href = '/customer-login.html';
+        return;
+      }
+
+      // Display Customer Name
+      const greetingName = document.getElementById('greetingName');
+      const badge = document.getElementById('customer-name-badge');
+      if (greetingName) greetingName.textContent = user.name || 'Valued Customer';
+      if (badge) badge.textContent = `Customer: ${user.name || user.email.split('@')[0]}`;
+
+      // Tab Switching
+      const tabPost = document.getElementById('tabPostJob');
+      const tabMy = document.getElementById('tabMyJobs');
+      const secPost = document.getElementById('sectionPostJob');
+      const secMy = document.getElementById('sectionMyJobs');
+
+      tabPost.addEventListener('click', () => {
+        tabPost.classList.add('active');
+        tabMy.classList.remove('active');
+        secPost.style.display = 'block';
+        secMy.style.display = 'none';
+      });
+
+      tabMy.addEventListener('click', () => {
+        tabMy.classList.add('active');
+        tabPost.classList.remove('active');
+        secPost.style.display = 'none';
+        secMy.style.display = 'block';
+        loadCustomerJobs();
+      });
+
+      // Trade Selector
+      const tiles = document.querySelectorAll('#tradeGrid .trade-tile');
+      const selectedTradeInput = document.getElementById('selectedTrade');
+      const wageNotice = document.getElementById('wageFloorNotice');
+
+      tiles.forEach(tile => {
+        tile.addEventListener('click', () => {
+          tiles.forEach(t => t.classList.remove('active'));
+          tile.classList.add('active');
+          selectedTradeInput.value = tile.dataset.trade;
+          if (wageNotice) wageNotice.textContent = `Min Fair Floor: ₹${tile.dataset.floor}`;
+        });
+      });
+
+      // GPS Detect
+      const btnGps = document.getElementById('btnDetectGps');
+      const addressInput = document.getElementById('jobAddress');
+      btnGps.addEventListener('click', () => {
+        if ('geolocation' in navigator) {
+          navigator.geolocation.getCurrentPosition(
+            () => { addressInput.value = 'Sector 62, Noida (Auto-Detected)'; showToast('📍 Location detected from GPS'); },
+            () => { showToast('GPS access denied; using Sector 62'); }
+          );
+        }
+      });
+
+      // Voice Assistant Integration (Gemini 3.5 Flash-Lite)
+      const btnDashMic = document.getElementById('btnDashMic');
+      const dashMicIcon = document.getElementById('dashMicIcon');
+      const dashMicText = document.getElementById('dashMicText');
+      const dashVoiceStatus = document.getElementById('dashVoiceStatus');
+
+      async function applyVoiceToForm(transcript, langHint) {
+        if (!dashVoiceStatus) return;
+        dashVoiceStatus.style.display = 'block';
+        dashVoiceStatus.innerHTML = `🧠 <em>Gemini AI analyzing ${langHint || 'speech'}...</em>`;
+
+        try {
+          let parsed;
+          if (window.SahakarVoiceAssistant && window.SahakarVoiceAssistant.parse) {
+            parsed = await window.SahakarVoiceAssistant.parse(transcript, langHint);
+          } else if (window.SahakarDB && window.SahakarDB.parseBooking) {
+            parsed = await window.SahakarDB.parseBooking(transcript);
+          }
+
+          if (!parsed) throw new Error('No parsed output returned');
+
+          // 1. Select Trade safely using tiles
+          if (parsed.service_type) {
+            const target = Array.from(tiles).find(t => t.dataset.trade.toLowerCase() === parsed.service_type.toLowerCase());
+            if (target) {
+              target.click();
+            } else if (selectedTradeInput) {
+              selectedTradeInput.value = parsed.service_type;
+            }
+          }
+
+          // 2. Set Address with visual highlight
+          if (parsed.location && addressInput) {
+            addressInput.value = parsed.location;
+            addressInput.style.borderColor = 'var(--color-primary)';
+            addressInput.style.backgroundColor = 'rgba(45,106,79,0.06)';
+            setTimeout(() => {
+              addressInput.style.borderColor = '';
+              addressInput.style.backgroundColor = '';
+            }, 2000);
+          }
+
+          // 3. Set Offer with visual highlight
+          const offerInput = document.getElementById('jobOffer');
+          if (parsed.budget && offerInput) {
+            offerInput.value = parsed.budget;
+            offerInput.style.borderColor = 'var(--color-primary)';
+            offerInput.style.backgroundColor = 'rgba(45,106,79,0.06)';
+            setTimeout(() => {
+              offerInput.style.borderColor = '';
+              offerInput.style.backgroundColor = '';
+            }, 2000);
+          }
+
+          // 4. Set Description with visual highlight
+          const descInput = document.getElementById('jobDesc');
+          if (parsed.description && descInput) {
+            descInput.value = parsed.description;
+            descInput.style.borderColor = 'var(--color-primary)';
+            descInput.style.backgroundColor = 'rgba(45,106,79,0.06)';
+            setTimeout(() => {
+              descInput.style.borderColor = '';
+              descInput.style.backgroundColor = '';
+            }, 2000);
+          }
+
+          dashVoiceStatus.style.display = 'block';
+          dashVoiceStatus.innerHTML = `✅ <strong>Auto-Filled (${parsed.detected_language || 'Gemini AI'}):</strong> ${parsed.service_type} • ₹${parsed.budget} • ${parsed.location}`;
+          showToast(`✨ Auto-filled: ${parsed.service_type} (₹${parsed.budget})`);
+
+          if (window.Voice && window.Voice.speak) {
+            window.Voice.speak(`Selected ${parsed.service_type} in ${parsed.location} for ${parsed.budget} rupees.`);
+          }
+        } catch (e) {
+          console.error('applyVoiceToForm error:', e);
+          dashVoiceStatus.style.display = 'block';
+          dashVoiceStatus.innerHTML = `⚠️ Error parsing speech. Please enter details manually.`;
+        }
+      }
+
+      if (btnDashMic) {
+        btnDashMic.addEventListener('click', () => {
+          if (!window.Voice || !window.Voice.isSupported()) {
+            alert('Speech recognition is not supported in this browser. Try the 1-click sample chips below!');
+            return;
+          }
+          dashMicText.textContent = 'Listening...';
+          dashMicIcon.textContent = '🔴';
+          window.Voice.startListening((transcript) => {
+            dashMicText.textContent = 'Tap to Speak';
+            dashMicIcon.textContent = '🎤';
+            applyVoiceToForm(transcript);
+          }, (err) => {
+            dashMicText.textContent = 'Tap to Speak';
+            dashMicIcon.textContent = '🎤';
+            showToast(`Mic error: ${err}`);
+          });
+        });
+      }
+
+      document.querySelectorAll('.dash-sample-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const sample = chip.getAttribute('data-sample');
+          const lang = chip.getAttribute('data-lang');
+          applyVoiceToForm(sample, lang);
+        });
+      });
+
+      // Submit Job
+      const newJobForm = document.getElementById('newJobForm');
+      newJobForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const trade = selectedTradeInput.value;
+        const address = addressInput.value;
+        const description = document.getElementById('jobDesc').value;
+        const offer = parseInt(document.getElementById('jobOffer').value, 10);
+
+        try {
+          const btn = document.getElementById('btnSubmitJob');
+          btn.disabled = true;
+          btn.textContent = 'Broadcasting to Workers...';
+
+          const job = await window.SahakarDB.createJob({
+            trade,
+            offer,
+            description,
+            address,
+            lat: 28.627,
+            lng: 77.365
+          });
+
+          btn.disabled = false;
+          btn.textContent = 'Broadcast Job to Nearby Workers →';
+          showToast('✓ Job Broadcasted to local Society Workers!');
+          tabMy.click();
+        } catch(err) {
+          console.error(err);
+          alert(err.message || 'Error posting job');
+        }
+      });
+
+      // Load Customer Jobs
+      async function loadCustomerJobs() {
+        const container = document.getElementById('jobsListContainer');
+        const countSpan = document.getElementById('myJobsCount');
+        container.innerHTML = '<p style="text-align:center; color:#888; padding:20px;">Loading your jobs...</p>';
+
+        try {
+          const jobs = await window.SahakarDB.getMyJobs(user.id);
+          countSpan.textContent = jobs.length;
+
+          if (jobs.length === 0) {
+            container.innerHTML = `
+              <div style="text-align:center; padding:32px 16px; color:#666;">
+                <p>You haven't posted any jobs yet.</p>
+                <button onclick="document.getElementById('tabPostJob').click()" class="btn btn-primary" style="padding:10px 18px; border-radius:12px; font-size:13px; font-weight:800;">Post Your First Job</button>
+              </div>
+            `;
+            return;
+          }
+
+          container.innerHTML = '';
+          for (const job of jobs) {
+            const bids = await window.SahakarDB.getBidsForJob(job.id);
+            const statusClass = job.status === 'completed' ? 'status-completed' : (job.status === 'assigned' ? 'status-assigned' : 'status-open');
+            
+            const card = document.createElement('div');
+            card.className = 'job-item-card';
+            card.innerHTML = `
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                <div>
+                  <span class="status-badge ${statusClass}">${job.status || 'open'}</span>
+                  <h4 style="margin:6px 0 2px 0; font-size:16px; font-weight:800; color:var(--color-secondary);">${job.trade} Service</h4>
+                  <span style="font-size:13px; color:var(--color-text-muted);">📍 ${job.address}</span>
+                </div>
+                <div style="text-align:right;">
+                  <span style="font-size:11px; color:var(--color-text-muted); text-transform:uppercase;">Your Offer</span>
+                  <span style="font-size:20px; font-weight:900; color:var(--color-primary); display:block;">₹${job.offer}</span>
+                </div>
+              </div>
+
+              <p style="font-size:14px; color:var(--color-text); margin:8px 0 14px 0; line-height:1.4;">${job.description}</p>
+
+              <!-- Actions row -->
+              <div style="display:flex; gap:8px; align-items:center; border-top:1px dashed rgba(0,0,0,0.1); padding-top:12px;">
+                <button class="btn btn-outline btn-edit-job" data-id="${job.id}" data-trade="${job.trade}" data-desc="${job.description}" data-addr="${job.address}" data-offer="${job.offer}" style="padding:6px 12px; border-radius:10px; font-size:12px; font-weight:700;">
+                  ✏️ Edit Job
+                </button>
+                <button class="btn btn-outline btn-delete-job" data-id="${job.id}" style="padding:6px 12px; border-radius:10px; font-size:12px; font-weight:700; color:var(--color-danger); border-color:var(--color-danger);">
+                  🗑️ Cancel
+                </button>
+                <a href="/bids.html?job=${job.id}" class="btn btn-primary" style="margin-left:auto; text-decoration:none; padding:6px 14px; border-radius:10px; font-size:12px; font-weight:800;">
+                  View Bids (${bids.length}) →
+                </a>
+              </div>
+
+              <!-- Live Bids Snippet if available -->
+              ${bids.length > 0 ? `
+                <div style="margin-top:14px; border-top:1px solid rgba(0,0,0,0.06); padding-top:10px;">
+                  <span style="font-size:11px; font-weight:800; color:var(--color-secondary); text-transform:uppercase;">Top Incoming Bid:</span>
+                  <div class="bid-row">
+                    <div>
+                      <strong style="font-size:13px; color:var(--color-secondary);">${bids[0].workerName}</strong>
+                      <span style="font-size:11px; color:var(--color-primary); background:rgba(45,106,79,0.1); padding:2px 6px; border-radius:6px; font-weight:700; margin-left:6px;">Trust: 96.3</span>
+                      <div style="font-size:12px; color:var(--color-text-muted);">~${bids[0].distance || '1.8'} km away • ETA: ~${bids[0].eta || '10'} min</div>
+                    </div>
+                    <div>
+                      <span style="font-size:16px; font-weight:900; color:var(--color-primary); margin-right:8px;">₹${bids[0].amount}</span>
+                      <button class="btn btn-primary btn-accept-direct" data-bid="${bids[0].id}" data-job="${job.id}" style="padding:6px 12px; border-radius:10px; font-size:12px; font-weight:800;">Accept</button>
+                    </div>
+                  </div>
+                </div>
+              ` : ''}
+            `;
+            container.appendChild(card);
+          }
+
+          // Attach Edit Handlers
+          document.querySelectorAll('.btn-edit-job').forEach(btn => {
+            btn.addEventListener('click', () => {
+              document.getElementById('editJobId').value = btn.dataset.id;
+              document.getElementById('editJobAddress').value = btn.dataset.addr;
+              document.getElementById('editJobDesc').value = btn.dataset.desc;
+              document.getElementById('editJobOffer').value = btn.dataset.offer;
+              document.getElementById('editJobModal').style.display = 'flex';
+            });
+          });
+
+          // Attach Delete Handlers
+          document.querySelectorAll('.btn-delete-job').forEach(btn => {
+            btn.addEventListener('click', async () => {
+              if (confirm('Are you sure you want to cancel this job request?')) {
+                await window.SahakarDB.deleteJob(btn.dataset.id);
+                showToast('Job cancelled successfully.');
+                loadCustomerJobs();
+              }
+            });
+          });
+
+          // Attach Accept Direct Handlers
+          document.querySelectorAll('.btn-accept-direct').forEach(btn => {
+            btn.addEventListener('click', async () => {
+              await window.SahakarDB.acceptBid(btn.dataset.bid);
+              window.location.href = `/track.html?job=${btn.dataset.job}`;
+            });
+          });
+
+        } catch(err) {
+          console.error(err);
+        }
+      }
+
+      // Save Edit Modal
+      document.getElementById('btnCancelEdit').addEventListener('click', () => {
+        document.getElementById('editJobModal').style.display = 'none';
+      });
+
+      document.getElementById('btnSaveEdit').addEventListener('click', async () => {
+        const jobId = document.getElementById('editJobId').value;
+        const address = document.getElementById('editJobAddress').value;
+        const description = document.getElementById('editJobDesc').value;
+        const offer = parseInt(document.getElementById('editJobOffer').value, 10);
+
+        try {
+          await window.SahakarDB.updateJob(jobId, { address, description, offer });
+          document.getElementById('editJobModal').style.display = 'none';
+          showToast('✓ Job details updated successfully!');
+          loadCustomerJobs();
+        } catch(err) {
+          alert('Failed to update job');
+        }
+      });
+
+      // Logout
+      const btnLogout = document.getElementById('btn-logout');
+      if (btnLogout) {
+        btnLogout.addEventListener('click', async () => {
+          await window.SahakarDB.signOut();
+          window.location.href = '/index.html';
+        });
+      }
+
+      function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.style.display = 'block';
+        setTimeout(() => toast.style.display = 'none', 3000);
+      }
+    });
+  </script>
+</body>
+</html>

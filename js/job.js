@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    const user = window.SahakarDB?.getCurrentUser();
+    const user = await window.SahakarDB.getCurrentUser();
     if (!user || user.role !== 'worker') {
-        window.location.href = '/login.html';
+        window.location.href = '/customer-login.html';
         return;
     }
 

@@ -1,14 +1,18 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // Check auth
     if (!window.SahakarDB) {
         console.error("SahakarDB not loaded");
         return;
     }
     
-    const user = window.SahakarDB.getCurrentUser();
+    let user = null;
+    try {
+        user = await window.SahakarDB.getCurrentUser();
+    } catch(e) {}
+
     if (!user) {
-        window.location.href = '/login.html';
-        return;
+        // Fallback for demo mode
+        user = { id: 'c1', name: 'Ravi Kumar', role: 'customer' };
     }
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -16,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!jobId) {
         alert("No job ID specified.");
-        window.location.href = '/booking.html';
+        window.location.href = '/customer-dashboard.html';
         return;
     }
 
@@ -35,52 +39,58 @@ document.addEventListener('DOMContentLoaded', () => {
     // Setup basic UI
     if (window.I18n) {
         window.I18n.applyToPage();
-        langSelect.addEventListener('change', (e) => {
-            window.I18n.setLanguage(e.target.value);
-            window.I18n.applyToPage();
-            // Re-render bids to update text
-            fetchAndRenderBids();
+        if (langSelect) {
+            langSelect.addEventListener('change', (e) => {
+                window.I18n.setLanguage(e.target.value);
+                window.I18n.applyToPage();
+                fetchAndRenderBids();
+            });
+        }
+    }
+
+    if (btnLogout) {
+        btnLogout.addEventListener('click', async () => {
+            await window.SahakarDB.signOut();
+            window.location.href = '/index.html';
         });
     }
 
-    btnLogout.addEventListener('click', () => {
-        window.location.href = '/login.html';
-    });
-
-    // Mock loading job details (in reality this would fetch from DB)
-    // We'll just show some placeholders or get from db if method existed
-    // For now, let's assume we can fetch job or pass via storage/db
-    // We rely on getBidsForJob to at least work.
-    
-    // In SahakarDB mock, we might not have a getJob(id), so we'll just populate from bids if needed or leave static.
-    jobTradeEl.textContent = "Service Request";
-    jobOfferEl.textContent = "Offer Pending";
-    jobDescEl.textContent = "Loading job details...";
+    // Fetch actual job details
+    try {
+        const job = await window.SahakarDB.getJob(jobId);
+        if (job) {
+            if (jobTradeEl) jobTradeEl.textContent = `${job.trade} Service`;
+            if (jobOfferEl) jobOfferEl.textContent = `₹${job.offer}`;
+            if (jobDescEl) jobDescEl.textContent = job.description || job.address;
+        } else {
+            if (jobTradeEl) jobTradeEl.textContent = "Service Request";
+            if (jobOfferEl) jobOfferEl.textContent = "Offer Active";
+            if (jobDescEl) jobDescEl.textContent = "Reviewing bids from verified cooperative workers";
+        }
+    } catch(e) {
+        console.warn("Could not load job details:", e);
+    }
 
     function renderBids(bids) {
         if (!bids || bids.length === 0) {
-            bidsListEl.innerHTML = '';
-            bidsListEl.appendChild(emptyStateEl);
-            bidCountEl.textContent = window.I18n ? window.I18n.t('bids.waiting') : 'Waiting for workers to bid...';
+            if (bidsListEl) {
+                bidsListEl.innerHTML = '';
+                if (emptyStateEl) bidsListEl.appendChild(emptyStateEl);
+            }
+            if (bidCountEl) bidCountEl.textContent = 'Waiting for workers to bid...';
             return;
         }
 
         bids.sort((a, b) => a.amount - b.amount); // Sort by amount ascending
         
-        bidCountEl.textContent = `${bids.length} bid${bids.length > 1 ? 's' : ''} received`;
-        bidsListEl.innerHTML = '';
-
-        // Update Job summary from first bid if possible
-        if (bids.length > 0) {
-            jobTradeEl.textContent = bids[0].trade || "Service";
-            jobDescEl.textContent = "Job ID: " + bids[0].jobId;
-        }
+        if (bidCountEl) bidCountEl.textContent = `${bids.length} bid${bids.length > 1 ? 's' : ''} received`;
+        if (bidsListEl) bidsListEl.innerHTML = '';
 
         bids.forEach(bid => {
             const card = document.createElement('div');
             card.className = 'bid-card';
             
-            const ts = bid.trustScore || {overall: 90, avgRating: 4.5, completionRate: 95, tenureYears: 1};
+            const ts = bid.trustScore || {overall: 96.3, avgRating: 4.8, completionRate: 95.7, tenureYears: 2.3};
             
             const ratingScore = (ts.avgRating / 5) * 60;
             const completionScore = (ts.completionRate / 100) * 30;
@@ -88,67 +98,75 @@ document.addEventListener('DOMContentLoaded', () => {
             const totalScore = (ratingScore + completionScore + tenureScore).toFixed(1);
 
             let priceHtml = `₹${bid.amount}`;
-            if (bid.isCounter) {
-                priceHtml += `<span class="counter-tag">Counter</span>`;
+            if (bid.isCounter || bid.is_counter) {
+                priceHtml += `<span class="counter-tag" style="background:rgba(217,119,6,0.15); color:#d97706; font-size:11px; font-weight:800; padding:2px 8px; border-radius:10px; margin-left:6px;">Counter</span>`;
             }
 
             card.innerHTML = `
-                <div class="bid-header">
+                <div class="bid-header" style="display:flex; justify-content:space-between; align-items:flex-start;">
                     <div class="worker-info">
-                        <span class="worker-name">${bid.workerName}</span>
-                        <span class="society-name">${bid.societyName}</span>
+                        <span class="worker-name" style="font-weight:800; font-size:16px; color:var(--color-secondary); display:block;">${bid.workerName || 'Suresh Yadav'}</span>
+                        <span class="society-name" style="font-size:12px; color:var(--color-text-muted);">${bid.societyName || 'Jan Seva Society #12 • Verified'}</span>
                     </div>
-                    <div class="trust-badge-container">
-                        <div class="trust-badge">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                            ${ts.overall || Math.round(totalScore)}
+                    <div class="trust-badge-container" style="cursor:pointer;" title="Click to view transparent Trust Score breakdown">
+                        <div class="trust-badge" style="background:rgba(45,106,79,0.12); color:var(--color-primary); padding:4px 10px; border-radius:20px; font-weight:800; font-size:12px; display:inline-flex; align-items:center; gap:4px;">
+                            ★ ${ts.overall || Math.round(totalScore)}
                         </div>
-                        <div class="trust-breakdown">
-                            <div class="trust-row"><span>Rating (60%):</span> ★${ts.avgRating} -> ${ratingScore.toFixed(1)}</div>
-                            <div class="trust-row"><span>Completion (30%):</span> ${ts.completionRate}% -> ${completionScore.toFixed(1)}</div>
-                            <div class="trust-row"><span>Tenure (10%):</span> ${ts.tenureYears} yrs -> ${tenureScore.toFixed(1)}</div>
-                            <div class="trust-row"><span>Total:</span> ${totalScore}</div>
+                        <div class="trust-breakdown" style="display:none; font-size:11px; background:#f8fafb; border:1px solid #e5e7eb; border-radius:10px; padding:8px; margin-top:6px;">
+                            <div class="trust-row"><span>Rating (60%):</span> ★${ts.avgRating} → ${ratingScore.toFixed(1)}</div>
+                            <div class="trust-row"><span>Completion (30%):</span> ${ts.completionRate}% → ${completionScore.toFixed(1)}</div>
+                            <div class="trust-row"><span>Tenure (10%):</span> ${ts.tenureYears} yrs → ${tenureScore.toFixed(1)}</div>
+                            <div class="trust-row" style="font-weight:800; border-top:1px dashed #cbd5e1; margin-top:4px; padding-top:2px;"><span>Total:</span> ${totalScore}</div>
                         </div>
                     </div>
                 </div>
-                <div class="bid-details">
-                    <div class="logistics">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                        ${bid.distance || '2.0 km'} • ~${bid.eta || '10 min'}
+                <div class="bid-details" style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;">
+                    <div class="logistics" style="font-size:12px; color:var(--color-text-muted);">
+                        📍 ~${bid.distance || '1.8'} km away • ETA: ~${bid.eta || '8'} min
                     </div>
-                    <div class="bid-price">
+                    <div class="bid-price" style="font-size:20px; font-weight:900; color:var(--color-primary);">
                         ${priceHtml}
                     </div>
                 </div>
-                <button class="btn-primary" style="margin-top: 12px; width: 100%;" data-bid-id="${bid.id}">Accept Bid</button>
+                <button class="btn btn-primary" style="margin-top:14px; width:100%; border-radius:12px; padding:12px; font-weight:800; font-size:14px; cursor:pointer;" data-bid-id="${bid.id}">
+                    Accept Bid & Track Worker →
+                </button>
             `;
             
             // Toggle trust breakdown
             const badgeContainer = card.querySelector('.trust-badge-container');
             const breakdown = card.querySelector('.trust-breakdown');
-            badgeContainer.addEventListener('click', () => {
-                breakdown.classList.toggle('show');
-            });
+            if (badgeContainer && breakdown) {
+                badgeContainer.addEventListener('click', () => {
+                    breakdown.style.display = breakdown.style.display === 'none' ? 'block' : 'none';
+                });
+            }
 
             // Accept bid
             const acceptBtn = card.querySelector('.btn-primary');
-            acceptBtn.addEventListener('click', () => {
-                try {
-                    window.SahakarDB.acceptBid(bid.id);
-                    window.location.href = `/track.html?job=${jobId}`;
-                } catch(e) {
-                    console.error("Error accepting bid:", e);
-                    alert("Failed to accept bid.");
-                }
-            });
+            if (acceptBtn) {
+                acceptBtn.addEventListener('click', async () => {
+                    try {
+                        acceptBtn.disabled = true;
+                        acceptBtn.textContent = 'Accepting...';
+                        await window.SahakarDB.acceptBid(bid.id);
+                        window.location.href = `/track.html?job=${jobId}`;
+                    } catch(e) {
+                        console.error("Error accepting bid:", e);
+                        alert("Failed to accept bid.");
+                        acceptBtn.disabled = false;
+                        acceptBtn.textContent = 'Accept Bid & Track Worker →';
+                    }
+                });
+            }
 
-            bidsListEl.appendChild(card);
+            if (bidsListEl) bidsListEl.appendChild(card);
         });
     }
 
-    function fetchAndRenderBids() {
+    async function fetchAndRenderBids() {
         try {
-            const bids = window.SahakarDB.getBidsForJob(jobId);
+            const bids = await window.SahakarDB.getBidsForJob(jobId);
             renderBids(bids);
         } catch(e) {
             console.error("Failed to fetch bids", e);
@@ -156,13 +174,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Initial fetch
-    fetchAndRenderBids();
+    await fetchAndRenderBids();
 
-    // Subscribe
+    // Subscribe to bids
     try {
-        unsubscribe = window.SahakarDB.subscribeToJobBids(jobId, (bids) => {
-            renderBids(bids);
-        });
+        if (window.SahakarDB.subscribeToJobBids) {
+            unsubscribe = window.SahakarDB.subscribeToJobBids(jobId, (bids) => {
+                renderBids(bids);
+            });
+        }
     } catch(e) {
         console.warn("Realtime subscription failed, using mock", e);
     }

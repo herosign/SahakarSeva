@@ -5,119 +5,477 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title data-i18n="booking.title">Book a Service - Sahakar Seva</title>
   <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body {
+      background-color: #fafaf8;
+      background-image: 
+        radial-gradient(at 0% 0%, hsla(145, 41%, 41%, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, hsla(88, 50%, 65%, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, hsla(145, 41%, 41%, 0.1) 0px, transparent 50%),
+        radial-gradient(at 0% 100%, hsla(202, 58%, 25%, 0.1) 0px, transparent 50%);
+      background-attachment: fixed;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 0 16px 80px 16px;
+    }
+    
+    .glass-pane {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: 24px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.05);
+      padding: 32px 24px;
+      margin-top: 10px;
+    }
+
+    .app-header {
+      background: transparent;
+      box-shadow: none;
+      padding: 20px 0 10px 0;
+    }
+
+    /* Pulsing Orb Mic Button */
+    .mic-orb {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--color-primary), #1B4332);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      border: none;
+      box-shadow: 0 10px 28px rgba(45, 106, 79, 0.4);
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      position: relative;
+    }
+    
+    .mic-orb::before {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      background: inherit;
+      z-index: -1;
+      opacity: 0.35;
+      transition: all 0.3s ease;
+    }
+
+    .mic-orb:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 14px 36px rgba(45, 106, 79, 0.5);
+    }
+    
+    .mic-orb.mic-btn--active {
+      animation: pulse-ring 1.5s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+      background: linear-gradient(135deg, #DC2626, #EF4444);
+    }
+
+    @keyframes pulse-ring {
+      0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
+      70% { box-shadow: 0 0 0 24px rgba(220, 38, 38, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+    }
+
+    /* Minimalist Glass Grid */
+    .trade-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .trade-tile {
+      background: rgba(255, 255, 255, 0.85);
+      border: 1.5px solid rgba(0,0,0,0.06);
+      border-radius: 16px;
+      padding: 16px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+
+    .trade-tile:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+      border-color: var(--color-primary-light);
+    }
+
+    .trade-tile.active {
+      border: 2px solid var(--color-primary) !important;
+      background: rgba(45, 106, 79, 0.08) !important;
+      box-shadow: 0 6px 18px rgba(45, 106, 79, 0.15) !important;
+    }
+
+    .glass-input-group {
+      margin-bottom: 20px;
+    }
+
+    .glass-input-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--color-secondary);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .glass-input {
+      width: 100%;
+      background: white;
+      border: 1.5px solid rgba(0, 0, 0, 0.08);
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 15px;
+      box-sizing: border-box;
+      color: var(--color-text);
+      transition: all 0.2s;
+    }
+
+    .glass-input:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 4px rgba(45, 106, 79, 0.15);
+    }
+    
+    .input-with-icon {
+      position: relative;
+    }
+    .input-with-icon .input-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-text-muted);
+      width: 20px;
+      height: 20px;
+    }
+    .input-with-icon .glass-input {
+      padding-left: 48px;
+    }
+
+    textarea.glass-input {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    .sample-voice-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.9);
+      border: 1px solid rgba(45,106,79,0.2);
+      color: var(--color-secondary);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin: 4px 2px;
+      text-decoration: none;
+    }
+
+    .sample-voice-chip:hover {
+      background: rgba(45,106,79,0.1);
+      border-color: var(--color-primary);
+      transform: translateY(-1px);
+    }
+
+    .voice-transcript-box {
+      background: rgba(255, 255, 255, 0.95);
+      border-left: 4px solid var(--color-primary);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-top: 14px;
+      font-size: 14px;
+      color: var(--color-secondary);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+      display: none;
+    }
+
+    .voice-lang-pill {
+      background: white;
+      border: 1.5px solid rgba(0,0,0,0.08);
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--color-text);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .voice-lang-pill:hover {
+      border-color: var(--color-primary);
+      transform: translateY(-1px);
+    }
+    .voice-lang-pill.active {
+      background: var(--color-primary) !important;
+      border-color: var(--color-primary) !important;
+      color: white !important;
+      box-shadow: 0 4px 12px rgba(45,106,79,0.3);
+    }
+
+    .voice-pulse-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: rgba(45,106,79,0.1);
+      color: var(--color-primary);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      animation: pulse-dot-anim 1.5s infinite;
+    }
+
+    @keyframes pulse-dot-anim {
+      0% { transform: scale(0.9); opacity: 0.7; }
+      50% { transform: scale(1.4); opacity: 1; }
+      100% { transform: scale(0.9); opacity: 0.7; }
+    }
+  </style>
 </head>
 <body>
-  <div class="app-container">
-    <header class="app-header">
-      <div class="header-brand">
-        <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24" class="text-primary mr-2">
+  <div class="container" style="max-width: 520px; margin: 0 auto;">
+    
+    <!-- Header -->
+    <header class="app-header" style="display: flex; justify-content: space-between; align-items: center;">
+      <a href="/" class="header-brand" style="display: flex; align-items: center; gap: 8px; text-decoration: none;">
+        <svg viewBox="0 0 24 24" fill="var(--color-primary)" width="28" height="28">
           <path d="M12 2L2 22h20L12 2zm0 3.8l7 14.2H5l7-14.2z"/>
         </svg>
-        <span class="font-bold text-h3">Sahakar Seva</span>
-      </div>
-      <div class="lang-select-container">
-        <select class="form-select lang-select" id="langSelect">
+        <span style="font-weight: 800; font-size: 22px; color: var(--color-primary); letter-spacing: -0.5px;">Sahakar Seva</span>
+      </a>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <select class="glass-input" style="padding: 6px 12px; font-size: 13px; border-radius: 20px; background: white; width: auto;" id="lang-select">
           <option value="en">English</option>
-          <option value="hi">à¤¹à¤¿à¤‚à¤¦à¥€</option>
-          <option value="mr">à¤®à¤°à¤¾à¤ à¥€</option>
+          <option value="hi">हिंदी</option>
+          <option value="mr">मराठी</option>
         </select>
+        <button id="btn-logout" class="btn btn-outline btn-small" style="border-color:var(--color-danger); color:var(--color-danger); padding:4px 10px; border-radius:12px; background:white; font-size:12px; cursor:pointer;">Logout</button>
       </div>
     </header>
 
-    <h2 class="text-h2 mt-3 mb-4 text-center">
-      <span data-i18n="booking.heading">Book a Service</span>
-      <svg viewBox="0 0 24 24" fill="#FFC107" width="20" height="20" class="inline-icon ml-1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-    </h2>
-
-    <div class="voice-section text-center mb-5">
-      <button class="mic-btn" id="voiceMicBtn">
-        <svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32">
-          <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/>
-        </svg>
-      </button>
-      <p class="mt-2 font-bold" id="voiceLabel" data-i18n="booking.tapToSpeak">Tap to speak</p>
-      <p class="text-small text-muted" data-i18n="booking.orDescribe">or describe your need below</p>
-    </div>
-
-    <form id="bookingForm">
-      <section class="mb-4">
-        <h3 class="text-h3 mb-3" data-i18n="booking.chooseService">Choose a service</h3>
-        <div class="trade-grid" id="tradeSelector">
-          <div class="trade-tile" data-trade="electrician">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 21h-1l1-7H7.5c-.58 0-.57-.32-.38-.66.19-.34 5.95-10.4 5.95-10.4.21-.36.63-.44.97-.24.16.1.28.26.34.44l-1 7h3.5c.46 0 .58.26.44.57L11.5 20.6c-.14.3-.39.43-.5.4z"/></svg>
-            <span data-i18n="trade.electrician">Electrician</span>
-          </div>
-          <div class="trade-tile" data-trade="plumber">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.16 8.82l-7.94 7.94c-.78.78-2.05.78-2.83 0l-1.41-1.41c-.78-.78-.78-2.05 0-2.83l7.94-7.94c1.1-1.1 2.87-1.1 3.97 0l.27.27c1.1 1.1 1.1 2.87 0 3.97zm-14.1-1.41L11.3 3.17c-.39-.39-1.02-.39-1.41 0L5.64 7.41c-.39.39-.39 1.02 0 1.41l4.24 4.24c.39.39 1.02.39 1.41 0l4.24-4.24c.39-.39.39-1.02 0-1.41L11.3 3.17z"/></svg>
-            <span data-i18n="trade.plumber">Plumber</span>
-          </div>
-          <div class="trade-tile" data-trade="carpenter">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
-            <span data-i18n="trade.carpenter">Carpenter</span>
-          </div>
-          <div class="trade-tile" data-trade="mason">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zm0 7.5L5.4 6 12 2.7 18.6 6 12 9.5zM2 9v6l10 5 10-5V9l-10 5-10-5z"/></svg>
-            <span data-i18n="trade.mason">Mason</span>
-          </div>
-          <div class="trade-tile" data-trade="acrepair">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.7 11c-.3-.8-.9-1.4-1.7-1.7V5.5c0-1.4-1.1-2.5-2.5-2.5S11 4.1 11 5.5v3.8c-.8.3-1.4.9-1.7 1.7H5.5C4.1 11 3 12.1 3 13.5S4.1 16 5.5 16h3.8c.3.8.9 1.4 1.7 1.7v3.8c0 1.4 1.1 2.5 2.5 2.5s2.5-1.1 2.5-2.5v-3.8c.8-.3 1.4-.9 1.7-1.7h3.8c1.4 0 2.5-1.1 2.5-2.5S22.9 11 21.5 11h-3.8zm-4.2 3.5c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
-            <span data-i18n="trade.acrepair">AC Repair</span>
-          </div>
-          <div class="trade-tile" data-trade="cleaning">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 9h-2V7h-2v5H6v-2H4v2c0 1.1.9 2 2 2h2v5h2v-5h2v2h2v-2c1.1 0 2-.9 2-2v-2h-2v2h-2v-2z"/></svg>
-            <span data-i18n="trade.cleaning">Cleaning</span>
-          </div>
+    <div class="glass-pane">
+      
+      <!-- Title -->
+      <div style="text-align: center; margin-bottom: 24px;">
+        <div style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; background: rgba(45,106,79,0.1); color: var(--color-primary); font-size: 12px; font-weight: 800; text-transform: uppercase; margin-bottom: 8px;">
+          🎙️ AI Voice-First Booking (MLH 2026)
         </div>
-        <input type="hidden" id="selectedTrade" required>
-      </section>
-
-      <section class="mb-4">
-        <h3 class="text-h3 mb-3" data-i18n="booking.yourOffer">Your offer</h3>
-        <div class="input-with-icon">
-          <span class="input-prefix font-bold text-primary">â‚¹</span>
-          <input type="number" id="offerPrice" class="form-input" style="padding-left: 2.5rem;" placeholder="e.g. 500" required>
-        </div>
-        <p class="form-hint mt-1 text-success" id="fairRangeHint">Fair range: â‚¹400 â€” â‚¹600</p>
-        <p class="wage-floor-warning hidden text-danger mt-1 text-small" id="wageWarning">Offer is below minimum fair wage.</p>
-      </section>
-
-      <section class="mb-4">
-        <h3 class="text-h3 mb-3" data-i18n="booking.description">Description</h3>
-        <textarea id="jobDescription" class="form-input" rows="3" placeholder="Describe what you need help with..." data-i18n-placeholder="booking.descPlaceholder" required></textarea>
-      </section>
-
-      <section class="mb-5">
-        <h3 class="text-h3 mb-3" data-i18n="booking.location">Location</h3>
-        <div class="input-with-icon">
-          <svg class="input-icon" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-          </svg>
-          <input type="text" id="locationInput" class="form-input" placeholder="Your address" data-i18n-placeholder="booking.locationPlaceholder" required>
-        </div>
-        <p class="text-small text-muted mt-1" data-i18n="booking.locationNote">We'll detect your approximate location</p>
-      </section>
-
-      <button type="button" class="btn btn-primary full-width" id="previewBookingBtn" data-i18n="booking.previewBtn">Review Booking</button>
-    </form>
-
-    <div id="summaryCard" class="card hidden border-left-gradient mt-4">
-      <h3 class="text-h3 mb-3" data-i18n="booking.summaryTitle">Booking Summary</h3>
-      <div class="summary-list mb-4">
-        <p><strong>Service:</strong> <span id="sumTrade">---</span></p>
-        <p><strong>Offer:</strong> â‚¹<span id="sumOffer">---</span></p>
-        <p><strong>Details:</strong> <span id="sumDesc">---</span></p>
-        <p><strong>Location:</strong> <span id="sumLoc">---</span></p>
+        <h1 style="font-size: 28px; font-weight: 800; color: var(--color-secondary); margin: 0 0 6px 0;" data-i18n="booking.heading">Book a Service</h1>
+        <p style="color: var(--color-text-muted); font-size: 14px; margin: 0;">Speak your request or choose below. The assistant auto-fills every detail.</p>
       </div>
-      <button type="button" class="btn btn-outline full-width mb-2" id="editBookingBtn" data-i18n="booking.editBtn">Edit Details</button>
-      <button type="button" class="btn btn-primary full-width" id="confirmBookingBtn" data-i18n="booking.confirmBtn">Confirm Booking</button>
+
+      <!-- Voice Interaction Area -->
+      <div class="text-center" style="margin-bottom: 28px;">
+
+        <!-- Spoken Voice Language Selector -->
+        <div style="margin-bottom: 18px; text-align: center;">
+          <span style="font-size: 11px; font-weight: 800; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 8px;">
+            🎙️ Speak in your preferred language:
+          </span>
+          <div id="voiceLangPills" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;">
+            <button type="button" class="voice-lang-pill active" data-lang="en">🇬🇧 English</button>
+            <button type="button" class="voice-lang-pill" data-lang="hi">🇮🇳 हिन्दी (Hindi)</button>
+            <button type="button" class="voice-lang-pill" data-lang="ta">🇮🇳 தமிழ் (Tamil)</button>
+            <button type="button" class="voice-lang-pill" data-lang="te">🇮🇳 తెలుగు (Telugu)</button>
+            <button type="button" class="voice-lang-pill" data-lang="bn">🇮🇳 বাংলা (Bengali)</button>
+            <button type="button" class="voice-lang-pill" data-lang="mr">🇮🇳 मराठी (Marathi)</button>
+          </div>
+        </div>
+
+        <!-- Mic Button -->
+        <button class="mic-orb" id="voiceMicBtn" title="Click to speak your booking">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="38" height="38">
+            <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/>
+          </svg>
+        </button>
+        <p style="margin-top: 14px; font-weight: 700; font-size: 15px; color: var(--color-primary);" id="voiceLabel" data-i18n="booking.tapToSpeak">Tap to Speak</p>
+        
+        <!-- Live Transcript Box -->
+        <div id="voiceTranscriptBox" class="voice-transcript-box text-left"></div>
+
+        <!-- AI Processing Indicator -->
+        <div id="voiceProcessingBox" style="display: none; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; font-weight: 700; font-size: 13px; color: var(--color-primary);">
+          <div class="pulse-dot"></div>
+          <span id="voiceProcessingText">🧠 Gemini 3.5 Flash-Lite analyzing speech...</span>
+        </div>
+
+        <!-- Success Auto-Fill Pill -->
+        <div id="voiceSuccessPill" style="display: none; background: rgba(45, 106, 79, 0.1); border: 1px solid rgba(45,106,79,0.3); border-radius: 14px; padding: 10px 14px; margin-top: 12px; text-align: left; font-size: 13px;">
+          <div style="display: flex; align-items: center; gap: 6px; color: var(--color-primary); font-weight: 800; margin-bottom: 4px;">
+            <span>✨ Gemini Multilingual AI Extracted</span>
+            <span id="aiLangTag" style="font-size: 10px; background: var(--color-primary); color: white; padding: 2px 6px; border-radius: 8px; text-transform: uppercase;">Hindi</span>
+          </div>
+          <div style="font-size: 12px; color: var(--color-secondary);" id="aiSummaryDetails">
+            Service: Electrician • Offer: ₹400 • Location: Lajpat Nagar, Delhi
+          </div>
+        </div>
+
+        <!-- Multilingual Instant Test Chips -->
+        <div style="margin-top: 18px; text-align: left;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-size: 11px; font-weight: 800; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">⚡ Quick Multilingual Speech Samples:</span>
+            <span style="font-size: 11px; font-weight: 700; color: var(--color-primary); background: rgba(45,106,79,0.1); padding: 2px 8px; border-radius: 10px;">Gemini 3.5 Flash-Lite</span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <button type="button" class="sample-voice-chip" data-lang="hi" data-sample="मुझे लाजपत नगर में पंखा ठीक करने के लिए इलेक्ट्रीशियन चाहिए, बजट 400 रुपये है">
+              <span>🇮🇳 <strong>Hindi:</strong> "मुझे लाजपत नगर में पंखा ठीक करने के लिए इलेक्ट्रीशियन चाहिए, बजट 400 रुपये"</span>
+            </button>
+            <button type="button" class="sample-voice-chip" data-lang="ta" data-sample="எனக்கு அடையாரில் குழாய் பழுதுபார்க்க பிளம்பர் வேண்டும், பட்ஜெட் 350 ரூபாய்">
+              <span>🇮🇳 <strong>Tamil:</strong> "எனக்கு அடையாரில் குழாய் பழுதுபார்க்க பிளம்பர் வேண்டும், பட்ஜெட் 350 ரூபாய்"</span>
+            </button>
+            <button type="button" class="sample-voice-chip" data-lang="te" data-sample="నాకు మాదాపూర్‌లో ఏసీ సర్వీసింగ్ కోసం టెక్నీషియన్ కావాలి, బడ్జెట్ 600 రూపాయలు">
+              <span>🇮🇳 <strong>Telugu:</strong> "నాకు మాదాపూర్‌లో ఏసీ సర్వీసింగ్ కోసం టెక్నీషియన్ కావాలి, బడ్జెట్ 600 రూపాయలు"</span>
+            </button>
+            <button type="button" class="sample-voice-chip" data-lang="bn" data-sample="আমার সল্টলেকে কাঠের টেবিল মেরামতের জন্য কার্পেন্টার দরকার, বাজেট ৫০০ টাকা">
+              <span>🇮🇳 <strong>Bengali:</strong> "আমার সল্টলেকে কাঠের টেবিল মেরামতের জন্য কার্পেন্টার দরকার, বাজেট ৫০০ টাকা"</span>
+            </button>
+            <button type="button" class="sample-voice-chip" data-lang="mr" data-sample="मला कोथरुड पुणे येथे नळ दुरुस्तीसाठी प्लंबर हवा आहे, बजेट ३५० रुपये">
+              <span>🇮🇳 <strong>Marathi:</strong> "मला कोथरुड पुणे येथे नळ दुरुस्तीसाठी प्लंबर हवा आहे, बजेट ३५० रुपये"</span>
+            </button>
+            <button type="button" class="sample-voice-chip" data-lang="en" data-sample="I need an Electrician in Sector 62 Noida to repair fan for 500 rupees">
+              <span>🇬🇧 <strong>English:</strong> "Need an Electrician in Sector 62 Noida to repair fan for 500 rupees"</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: center; margin: 20px 0;">
+        <div style="flex-grow: 1; height: 1px; background: rgba(0,0,0,0.08);"></div>
+        <span style="padding: 0 16px; color: var(--color-text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase;">or review details below</span>
+        <div style="flex-grow: 1; height: 1px; background: rgba(0,0,0,0.08);"></div>
+      </div>
+
+      <!-- Booking Form -->
+      <form id="bookingForm">
+        
+        <!-- Trade Selection -->
+        <div class="glass-input-group">
+          <label data-i18n="booking.chooseService">Service Category</label>
+          <div class="trade-grid" id="tradeSelector">
+            <div class="trade-tile active" data-trade="Electrician">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M11 21h-1l1-7H7.5c-.58 0-.57-.32-.38-.66.19-.34 5.95-10.4 5.95-10.4.21-.36.63-.44.97-.24.16.1.28.26.34.44l-1 7h3.5c.46 0 .58.26.44.57L11.5 20.6c-.14.3-.39.43-.5.4z"/></svg>
+              <span data-i18n="trade.electrician">Electrician</span>
+            </div>
+            <div class="trade-tile" data-trade="Plumber">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M21.16 8.82l-7.94 7.94c-.78.78-2.05.78-2.83 0l-1.41-1.41c-.78-.78-.78-2.05 0-2.83l7.94-7.94c1.1-1.1 2.87-1.1 3.97 0l.27.27c1.1 1.1 1.1 2.87 0 3.97zm-14.1-1.41L11.3 3.17c-.39-.39-1.02-.39-1.41 0L5.64 7.41c-.39.39-.39 1.02 0 1.41l4.24 4.24c.39.39 1.02.39 1.41 0l4.24-4.24c.39-.39.39-1.02 0-1.41L11.3 3.17z"/></svg>
+              <span data-i18n="trade.plumber">Plumber</span>
+            </div>
+            <div class="trade-tile" data-trade="Carpenter">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+              <span data-i18n="trade.carpenter">Carpenter</span>
+            </div>
+            <div class="trade-tile" data-trade="Mason">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M12 2L2 7l10 5 10-5-10-5zm0 7.5L5.4 6 12 2.7 18.6 6 12 9.5zM2 9v6l10 5 10-5V9l-10 5-10-5z"/></svg>
+              <span data-i18n="trade.mason">Mason</span>
+            </div>
+            <div class="trade-tile" data-trade="AC Repair">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M17.7 11c-.3-.8-.9-1.4-1.7-1.7V5.5c0-1.4-1.1-2.5-2.5-2.5S11 4.1 11 5.5v3.8c-.8.3-1.4.9-1.7 1.7H5.5C4.1 11 3 12.1 3 13.5S4.1 16 5.5 16h3.8c.3.8.9 1.4 1.7 1.7v3.8c0 1.4 1.1 2.5 2.5 2.5s2.5-1.1 2.5-2.5v-3.8c.8-.3 1.4-.9 1.7-1.7h3.8c1.4 0 2.5-1.1 2.5-2.5S22.9 11 21.5 11h-3.8zm-4.2 3.5c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
+              <span data-i18n="trade.acrepair">AC Repair</span>
+            </div>
+            <div class="trade-tile" data-trade="Cleaning">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 9h-2V7h-2v5H6v-2H4v2c0 1.1.9 2 2 2h2v5h2v-5h2v2h2v-2c1.1 0 2-.9 2-2v-2h-2v2h-2v-2z"/></svg>
+              <span data-i18n="trade.cleaning">Cleaning</span>
+            </div>
+          </div>
+          <input type="hidden" id="selectedTrade" value="Electrician" required>
+        </div>
+
+        <!-- Job Description -->
+        <div class="glass-input-group">
+          <label data-i18n="booking.description">Task Details</label>
+          <textarea id="jobDescription" class="glass-input" placeholder="e.g. Need help installing a ceiling fan in the living room and checking switches..." required>Need help installing a ceiling fan in the living room</textarea>
+        </div>
+
+        <!-- Location -->
+        <div class="glass-input-group">
+          <label data-i18n="booking.location">Your Address / Locality</label>
+          <div class="input-with-icon">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            <input type="text" id="locationInput" class="glass-input" placeholder="Enter your full address" value="Sector 62, Noida" required>
+          </div>
+        </div>
+
+        <!-- Wage Setter with Wage Floor Guardrail (MLH 2026) -->
+        <div class="glass-input-group">
+          <div style="display: flex; justify-content: space-between; align-items: baseline;">
+            <label data-i18n="booking.yourOffer">Your Offer (₹)</label>
+            <span id="fairRangeHint" style="font-size: 12px; font-weight: 700; color: var(--color-primary); background: rgba(45,106,79,0.1); padding: 4px 8px; border-radius: 12px;">Fair Range: ₹350 - ₹550</span>
+          </div>
+          <div class="input-with-icon" style="margin-top: 8px;">
+            <span style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-weight: 800; color: var(--color-primary); font-size: 18px;">₹</span>
+            <input type="number" id="offerPrice" class="glass-input" style="padding-left: 36px; font-size: 18px; font-weight: 700;" placeholder="0" value="450" required>
+          </div>
+          <p class="wage-floor-warning hidden text-small mt-2" id="wageWarning" style="color: #d32f2f; background: #ffebee; padding: 10px 14px; border-radius: 10px; font-weight: 600; display: none; margin-top: 8px;">
+            Offer is below the society minimum fair wage floor.
+          </p>
+        </div>
+
+        <button type="button" class="btn btn-primary" style="width: 100%; padding: 18px; font-size: 16px; border-radius: 16px; box-shadow: 0 8px 24px rgba(45,106,79,0.35); font-weight: 800; cursor: pointer;" id="previewBookingBtn">
+          Review & Post Booking →
+        </button>
+      </form>
+
+      <!-- Summary Card Popover -->
+      <div id="summaryCard" class="summary-card hidden mt-4" style="display: none;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+          <h3 style="font-size: 18px; font-weight: 800; color: var(--color-secondary); margin: 0;" data-i18n="booking.summaryTitle">Booking Summary</h3>
+          <span style="background: var(--color-primary); color: white; border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: bold;" id="sumTrade">Electrician</span>
+        </div>
+        
+        <div style="background: rgba(0,0,0,0.03); border-radius: 14px; padding: 16px; margin-bottom: 20px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px dashed rgba(0,0,0,0.1); padding-bottom: 10px;">
+            <span style="color: var(--color-text-muted); font-size: 14px;">Your Offer (100% to Worker)</span>
+            <span style="font-weight: 800; font-size: 18px; color: var(--color-primary);">₹<span id="sumOffer">450</span></span>
+          </div>
+          <div style="margin-bottom: 10px;">
+            <span style="display: block; color: var(--color-text-muted); font-size: 11px; text-transform: uppercase; font-weight: 700; margin-bottom: 2px;">Task Details</span>
+            <span style="font-size: 14px; color: var(--color-text); line-height: 1.4;" id="sumDesc">Task description goes here...</span>
+          </div>
+          <div>
+            <span style="display: block; color: var(--color-text-muted); font-size: 11px; text-transform: uppercase; font-weight: 700; margin-bottom: 2px;">Location</span>
+            <span style="font-size: 14px; color: var(--color-text);" id="sumLoc">Sector 62, Noida</span>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px;">
+          <button type="button" class="btn btn-outline" style="flex: 1; border-radius: 14px; padding: 14px; font-weight: 700;" id="editBookingBtn">Edit</button>
+          <button type="button" class="btn btn-primary" style="flex: 2; border-radius: 14px; padding: 14px; font-weight: 800; box-shadow: 0 4px 16px rgba(45,106,79,0.3);" id="confirmBookingBtn">Confirm Booking</button>
+        </div>
+      </div>
+
     </div>
-
   </div>
+  
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <script src="/js/supabase-client.js"></script>
   <script src="/js/i18n.js"></script>
   <script src="/js/voice.js"></script>
+  <script src="/js/voice-assistant.js"></script>
   <script src="/js/booking.js" defer></script>
 </body>
 </html>

@@ -1,165 +1,389 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-i18n="dashboard_title">Worker Dashboard - Sahakar Seva</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <style>
-        .dashboard-container { max-width: 480px; margin: 0 auto; padding-bottom: 70px; }
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 16px; background-color: #2D6A4F; color: white; }
-        .logo { font-size: 1.2rem; font-weight: bold; }
-        .welfare-hub { padding: 16px; background: #f8f9fa; border-bottom: 1px solid #e9ecef; }
-        .card { background: white; border-radius: 8px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .card-header { display: flex; align-items: center; margin-bottom: 8px; font-weight: bold; color: #2D6A4F; }
-        .card-header svg { margin-right: 8px; width: 20px; height: 20px; fill: currentColor; }
-        .trust-score { font-size: 1.5rem; font-weight: bold; color: #2D6A4F; }
-        .trust-details { font-size: 0.9rem; color: #495057; display: none; margin-top: 8px; border-top: 1px solid #eee; padding-top: 8px; }
-        .trust-details.expanded { display: block; }
-        .actions-row { display: flex; gap: 12px; align-items: center; margin-top: 16px; justify-content: space-between; }
-        .btn-outline { border: 1px solid #2D6A4F; color: #2D6A4F; background: transparent; padding: 10px 16px; border-radius: 4px; font-weight: bold; cursor: pointer; flex: 1; text-align: center; }
-        .sos-btn { width: 64px; height: 64px; border-radius: 50%; background-color: #e63946; color: white; border: none; font-weight: bold; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; animation: pulse 2s infinite; box-shadow: 0 4px 10px rgba(230, 57, 70, 0.4); flex-shrink: 0; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(230, 57, 70, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(230, 57, 70, 0); } 100% { box-shadow: 0 0 0 0 rgba(230, 57, 70, 0); } }
-        .jobs-section { padding: 16px; }
-        .job-card { background: white; border-radius: 8px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); cursor: pointer; display: block; text-decoration: none; color: inherit; border-left: 4px solid #2D6A4F; transition: transform 0.1s; }
-        .job-card:active { transform: scale(0.98); }
-        .job-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
-        .job-trade { font-weight: bold; display: flex; align-items: center; }
-        .job-trade svg { width: 16px; height: 16px; margin-right: 4px; fill: #2D6A4F; }
-        .job-offer { font-weight: bold; color: #2D6A4F; }
-        .job-desc { color: #495057; font-size: 0.95rem; margin-bottom: 8px; }
-        .job-meta { display: flex; justify-content: space-between; font-size: 0.85rem; color: #6c757d; align-items: center; }
-        .btn-icon { background: none; border: none; cursor: pointer; color: #2D6A4F; padding: 8px; }
-        .btn-icon svg { width: 24px; height: 24px; fill: currentColor; }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto; background: white; display: flex; border-top: 1px solid #e9ecef; }
-        .nav-item { flex: 1; text-align: center; padding: 12px 0; color: #6c757d; text-decoration: none; display: flex; flex-direction: column; align-items: center; }
-        .nav-item.active { color: #2D6A4F; font-weight: bold; }
-        .nav-item svg { width: 24px; height: 24px; fill: currentColor; margin-bottom: 4px; }
-        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 100; }
-        .modal-content { background: white; padding: 24px; border-radius: 8px; width: 90%; max-width: 400px; }
-        .modal-content h3 { margin-top: 0; }
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: bold; }
-        .form-group input, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        .btn-primary { background: #2D6A4F; color: white; border: none; padding: 12px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; }
-        .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 12px 24px; border-radius: 4px; display: none; z-index: 200; width: 80%; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title data-i18n="dashboard_title">Worker Dashboard - Sahakar Seva</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body {
+      background-color: #fafaf8;
+      background-image: 
+        radial-gradient(at 0% 0%, hsla(145, 41%, 41%, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, hsla(88, 50%, 65%, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, hsla(145, 41%, 41%, 0.1) 0px, transparent 50%),
+        radial-gradient(at 0% 100%, hsla(202, 58%, 25%, 0.1) 0px, transparent 50%);
+      background-attachment: fixed;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 0 16px 90px 16px;
+    }
+
+    .dashboard-container {
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .glass-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+    }
+
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: 24px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.05);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .worker-hero-card {
+      background: linear-gradient(135deg, var(--color-primary), #1B4332);
+      color: white;
+      border-radius: 24px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 12px 32px rgba(45, 106, 79, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .worker-hero-card::after {
+      content: '';
+      position: absolute;
+      right: -20px;
+      bottom: -20px;
+      width: 140px;
+      height: 140px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 50%;
+    }
+
+    .welfare-stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .welfare-stat-box {
+      background: white;
+      border-radius: 16px;
+      padding: 16px;
+      border: 1px solid rgba(0,0,0,0.06);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+
+    .job-card-modern {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(16px);
+      border: 1.5px solid rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+      transition: all 0.25s ease;
+    }
+
+    .job-card-modern:hover {
+      transform: translateY(-2px);
+      border-color: var(--color-primary-light);
+      box-shadow: 0 12px 32px rgba(45, 106, 79, 0.1);
+    }
+
+    .sos-radar-btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #DC2626, #991B1B);
+      color: white;
+      border: none;
+      font-weight: 900;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 20px rgba(220, 38, 38, 0.45);
+      animation: radarPulse 2s infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes radarPulse {
+      0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.6); }
+      70% { box-shadow: 0 0 0 14px rgba(220, 38, 38, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+    }
+
+    .badge-success-mini {
+      font-size: 11px;
+      background: rgba(45,106,79,0.15);
+      color: var(--color-primary);
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-weight: 800;
+    }
+
+    .trust-details {
+      display: none;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed rgba(0,0,0,0.1);
+      font-size: 13px;
+    }
+
+    .trust-details.expanded {
+      display: block;
+    }
+
+    .glass-bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      max-width: 520px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-top: 1px solid rgba(255, 255, 255, 0.9);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 16px;
+      box-shadow: 0 -8px 24px rgba(0,0,0,0.06);
+      border-radius: 20px 20px 0 0;
+      z-index: 100;
+    }
+
+    .nav-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      gap: 4px;
+    }
+
+    .nav-btn.active {
+      color: var(--color-primary);
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      padding: 16px;
+    }
+
+    .modal-card {
+      background: white;
+      border-radius: 24px;
+      padding: 28px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    }
+  </style>
 </head>
 <body>
-    <div class="dashboard-container">
-        <header class="header">
-            <div class="logo">सहकार सेवा</div>
-            <div style="display: flex; gap: 12px; align-items: center;">
-                <select id="lang-select" aria-label="Select Language">
-                    <option value="en">EN</option>
-                    <option value="hi">HI</option>
-                </select>
-                <button id="logout-btn" style="background: none; border: 1px solid white; color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer;" data-i18n="logout">Logout</button>
-            </div>
-        </header>
+  <div class="dashboard-container">
+    
+    <!-- Top Header -->
+    <header class="glass-header">
+      <a href="/" style="display: flex; align-items: center; gap: 8px; text-decoration: none;">
+        <svg viewBox="0 0 24 24" fill="var(--color-primary)" width="28" height="28">
+          <path d="M12 2L2 22h20L12 2zm0 3.8l7 14.2H5l7-14.2z"/>
+        </svg>
+        <span style="font-weight: 800; font-size: 22px; color: var(--color-primary);">Sahakar Seva</span>
+      </a>
 
-        <section class="welfare-hub">
-            <h2 style="margin-top: 0; font-size: 1.2rem; margin-bottom: 12px;"><span data-i18n="welcome">Welcome,</span> <span id="worker-name">...</span> <span id="worker-trade-badge" style="background: #2D6A4F; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; margin-left: 8px;"></span></h2>
-            
-            <div class="card" id="insurance-card">
-                <div class="card-header">
-                    <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
-                    <span data-i18n="insurance">Insurance</span>
-                </div>
-                <div id="insurance-details" style="font-size: 0.9rem;">Loading...</div>
-            </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <a href="/onboarding.html" style="font-size: 12px; font-weight: 700; color: var(--color-primary); text-decoration: none; padding: 6px 12px; border-radius: 20px; background: rgba(45,106,79,0.1);">
+          Skills & Society ⚙️
+        </a>
+        <button id="logout-btn" class="btn btn-outline btn-small" style="border-color:var(--color-danger); color:var(--color-danger); padding:4px 8px; border-radius:12px; font-size:12px; background:white; cursor:pointer;">Logout</button>
+      </div>
+    </header>
 
-            <div class="card" id="finance-card">
-                <div class="card-header">
-                    <svg viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
-                    <span data-i18n="welfare_funds">Welfare Funds</span>
-                </div>
-                <div id="finance-details" style="display: flex; justify-content: space-between; font-size: 0.95rem;">
-                    <div><strong data-i18n="pf_balance">PF Balance:</strong> <span id="pf-balance">₹0</span></div>
-                    <div><strong data-i18n="pool_balance">Welfare Pool:</strong> <span id="pool-balance">₹0</span></div>
-                </div>
-            </div>
-
-            <div class="card" id="trust-card" style="cursor: pointer;" aria-expanded="false" role="button" tabindex="0">
-                <div class="card-header" style="justify-content: space-between;">
-                    <div style="display: flex; align-items: center;">
-                        <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                        <span data-i18n="trust_score">Trust Score</span>
-                    </div>
-                    <div class="trust-score" id="overall-score">--</div>
-                </div>
-                <div class="trust-details" id="trust-details">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                        <span data-i18n="customer_rating">Customer Rating (60%)</span>
-                        <span id="score-rating">--</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                        <span data-i18n="job_completion">Job Completion (30%)</span>
-                        <span id="score-completion">--</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span data-i18n="platform_tenure">Platform Tenure (10%)</span>
-                        <span id="score-tenure">--</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="actions-row">
-                <button class="btn-outline" id="btn-grievance" data-i18n="file_grievance">File Grievance</button>
-                <button class="sos-btn" id="btn-sos" aria-label="Send SOS" data-i18n="sos">SOS</button>
-            </div>
-        </section>
-
-        <section class="jobs-section">
-            <h3 style="margin-top: 0; color: #343a40;"><span data-i18n="available_jobs">Available Jobs</span> <span id="job-count" style="font-weight: normal; font-size: 0.9rem; color: #6c757d;">(0)</span></h3>
-            <div id="jobs-container">
-                <p id="empty-jobs" style="color: #6c757d; text-align: center; padding: 20px 0;" data-i18n="no_jobs">No open jobs at the moment. We'll notify you when new jobs arrive.</p>
-                <!-- Jobs will be injected here -->
-            </div>
-        </section>
-
-        <nav class="bottom-nav">
-            <a href="/dashboard.html" class="nav-item active">
-                <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-                <span data-i18n="nav_home">Home</span>
-            </a>
-            <a href="/my-jobs.html" class="nav-item">
-                <svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>
-                <span data-i18n="nav_jobs">Jobs</span>
-            </a>
-            <a href="/profile.html" class="nav-item">
-                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                <span data-i18n="nav_profile">Profile</span>
-            </a>
-        </nav>
-
-        <!-- Grievance Modal -->
-        <div class="modal" id="grievance-modal">
-            <div class="modal-content">
-                <h3 data-i18n="file_grievance">File Grievance</h3>
-                <div class="form-group">
-                    <label for="g-subject" data-i18n="subject">Subject</label>
-                    <input type="text" id="g-subject" required>
-                </div>
-                <div class="form-group">
-                    <label for="g-body" data-i18n="description">Description</label>
-                    <textarea id="g-body" rows="4" required></textarea>
-                </div>
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn-outline" id="btn-cancel-grievance" data-i18n="cancel">Cancel</button>
-                    <button class="btn-primary" id="btn-submit-grievance" data-i18n="submit">Submit</button>
-                </div>
-            </div>
+    <!-- Worker Hero Greeting Card -->
+    <div class="worker-hero-card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.2); padding: 3px 10px; border-radius: 14px; font-size: 12px; font-weight: 700; margin-bottom: 8px;">
+            <span>🛡️ Verified Member</span>
+          </div>
+          <h2 style="margin: 0; font-size: 24px; font-weight: 800;"><span id="worker-name">Suresh Yadav</span></h2>
+          <p style="margin: 4px 0 0 0; opacity: 0.9; font-size: 14px;">
+            <span id="worker-trade-badge" style="background: rgba(255,255,255,0.25); padding: 2px 8px; border-radius: 8px; font-weight: 700;">Electrician</span>
+            • <span id="worker-society-badge">Jan Seva Society #12</span>
+          </p>
         </div>
-
-        <div class="toast" id="toast" role="alert" aria-live="assertive"></div>
+        <div style="background: rgba(255,255,255,0.15); border-radius: 16px; padding: 10px 14px; text-align: center;">
+          <span style="display: block; font-size: 11px; text-transform: uppercase; font-weight: 800; opacity: 0.85;">Commission</span>
+          <span style="font-size: 20px; font-weight: 900;">0%</span>
+        </div>
+      </div>
     </div>
 
-    <!-- Mocks / Global Scripts -->
+    <!-- Cooperative Welfare Hub (MLH 2026 Welfare Pool) -->
+    <div class="glass-panel">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h3 style="margin: 0; font-size: 18px; font-weight: 800; color: var(--color-secondary); display: flex; align-items: center; gap: 6px;">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="var(--color-primary)"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+          Cooperative Welfare Hub
+        </h3>
+        <span style="font-size: 11px; font-weight: 800; color: var(--color-primary); background: rgba(45,106,79,0.1); padding: 2px 8px; border-radius: 10px;">
+          +2% Auto-Contribution
+        </span>
+      </div>
+
+      <!-- Financial Micro-Provident Fund & Pool -->
+      <div class="welfare-stat-grid">
+        <div class="welfare-stat-box">
+          <span style="font-size: 12px; color: var(--color-text-muted); font-weight: 700; text-transform: uppercase;">Micro-PF Balance</span>
+          <div style="font-size: 24px; font-weight: 900; color: var(--color-primary); margin-top: 4px;" id="pf-balance">₹2,340</div>
+          <span style="font-size: 11px; color: var(--color-text-muted);">Direct pension reserve</span>
+        </div>
+
+        <div class="welfare-stat-box">
+          <span style="font-size: 12px; color: var(--color-text-muted); font-weight: 700; text-transform: uppercase;">Welfare Pool</span>
+          <div style="font-size: 24px; font-weight: 900; color: var(--color-secondary); margin-top: 4px;" id="pool-balance">₹580</div>
+          <span style="font-size: 11px; color: var(--color-text-muted);">Society medical cushion</span>
+        </div>
+      </div>
+
+      <!-- Social Security & Insurance -->
+      <div style="background: white; border-radius: 16px; padding: 14px; margin-top: 12px; border: 1px solid rgba(0,0,0,0.06);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+          <span style="font-size: 12px; font-weight: 800; color: var(--color-secondary); text-transform: uppercase;">Institutional Insurance</span>
+          <span class="badge-success-mini">Federation Backed</span>
+        </div>
+        <div id="insurance-details" style="font-size: 13px;">
+          <!-- Injected dynamically -->
+        </div>
+      </div>
+
+      <!-- Dynamic Trust Score Accordion (MLH 2026) -->
+      <div id="trust-card" style="background: white; border-radius: 16px; padding: 14px; margin-top: 12px; border: 1px solid rgba(0,0,0,0.06); cursor: pointer;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <span style="font-size: 12px; font-weight: 800; color: var(--color-secondary); text-transform: uppercase;">Dynamic Trust Score</span>
+            <div style="font-size: 12px; color: var(--color-text-muted); margin-top: 2px;">Algorithm: 60% Rating + 30% Completion + 10% Tenure</div>
+          </div>
+          <div style="font-size: 24px; font-weight: 900; color: var(--color-primary);" id="overall-score">96.3</div>
+        </div>
+
+        <div id="trust-details" class="trust-details">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <span>★ Customer Rating (60% weight)</span>
+            <strong id="score-rating">★4.8 → 57.6</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <span>✓ Job Completion (30% weight)</span>
+            <strong id="score-completion">98% → 29.4</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span>⌛ Platform Tenure (10% weight)</span>
+            <strong id="score-tenure">1.2 yrs → 9.3</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions Row: SOS & Grievance -->
+      <div style="display: flex; gap: 12px; align-items: center; margin-top: 16px;">
+        <button id="btn-grievance" class="btn btn-outline" style="flex: 1; padding: 14px; border-radius: 14px; font-size: 13px; font-weight: 800; border-color: var(--color-primary); color: var(--color-primary); cursor: pointer;">
+          ⚖️ File Grievance
+        </button>
+        <button id="btn-sos" class="sos-radar-btn" aria-label="Emergency SOS">
+          <span>SOS</span>
+          <span style="font-size: 9px; opacity: 0.85;">RADAR</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Available Jobs Live Feed -->
+    <div class="glass-panel" id="jobs-section">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <div>
+          <h3 style="margin: 0; font-size: 18px; font-weight: 800; color: var(--color-secondary);">
+            Available Jobs Near You <span id="job-count" style="font-size: 14px; font-weight: 700; color: var(--color-primary);">(0)</span>
+          </h3>
+          <span style="font-size: 12px; color: var(--color-text-muted);">Real-time broadcast from verified local customers</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span style="width: 8px; height: 8px; background: #059669; border-radius: 50%; display: inline-block; animation: radarPulse 1.5s infinite;"></span>
+          <span style="font-size: 11px; font-weight: 700; color: #059669;">LIVE</span>
+        </div>
+      </div>
+
+      <div id="jobs-container">
+        <p id="empty-jobs" style="text-align: center; color: var(--color-text-muted); padding: 32px 16px; font-size: 14px;">
+          No open jobs at this moment.<br>You will be notified instantly when new customer bookings arrive!
+        </p>
+      </div>
+    </div>
+
+    <!-- Bottom Nav (Worker Specialized) -->
+    <nav class="glass-bottom-nav">
+      <a href="/dashboard.html" class="nav-btn active">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="#jobs-section" class="nav-btn">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>
+        <span>Available Jobs</span>
+      </a>
+      <a href="/onboarding.html" class="nav-btn">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        <span>My Skills</span>
+      </a>
+    </nav>
+
+    <!-- Grievance Modal -->
+    <div id="grievance-modal" class="modal-overlay">
+      <div class="modal-card">
+        <h3 style="margin: 0 0 8px 0; font-size: 20px; font-weight: 800; color: var(--color-secondary);">File Grievance</h3>
+        <p style="margin: 0 0 20px 0; font-size: 13px; color: var(--color-text-muted);">Report payment disputes, customer misconduct, or safety concerns directly to your Society Secretary.</p>
+        
+        <div style="margin-bottom: 14px;">
+          <label style="display: block; font-size: 13px; font-weight: 700; margin-bottom: 4px;">Subject</label>
+          <input type="text" id="g-subject" class="custom-input" style="width: 100%;" placeholder="e.g. Delayed payment for job #449">
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-size: 13px; font-weight: 700; margin-bottom: 4px;">Description</label>
+          <textarea id="g-body" class="custom-input" style="width: 100%; height: 90px; resize: none;" placeholder="Provide details of the issue..."></textarea>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+          <button id="btn-cancel-grievance" class="btn btn-outline" style="flex: 1; padding: 12px; border-radius: 12px;">Cancel</button>
+          <button id="btn-submit-grievance" class="btn btn-primary" style="flex: 2; padding: 12px; border-radius: 12px;">Submit to Society</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" style="position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); background: #1B4332; color: white; padding: 12px 24px; border-radius: 30px; font-size: 14px; font-weight: 700; display: none; z-index: 300; box-shadow: 0 8px 24px rgba(0,0,0,0.2); width: max-content; max-width: 90%;"></div>
+
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="/js/supabase-client.js"></script>
-    <script src="/js/i18n.js"></script>
-    <script src="/js/voice.js"></script>
-    <script src="/js/dashboard.js" defer></script>
+  <script src="/js/supabase-client.js"></script>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/voice.js"></script>
+  <script src="/js/dashboard.js" defer></script>
 </body>
 </html>

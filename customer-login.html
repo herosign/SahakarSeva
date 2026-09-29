@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title data-i18n="login.title">Login - Sahakar Seva</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body {
+      background-color: #fafaf8;
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    
+    .hidden {
+      display: none !important;
+    }
+
+    .auth-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .auth-banner {
+      flex: 1;
+      background: linear-gradient(135deg, rgba(27,73,101,0.9), rgba(45,106,79,0.9)), url('https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=1470&auto=format&fit=crop') center/cover no-repeat;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      padding: 48px;
+      color: white;
+    }
+
+    @media (min-width: 768px) {
+      .auth-banner {
+        display: flex;
+      }
+    }
+
+    .auth-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 32px;
+      max-width: 480px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .glass-input {
+      width: 100%;
+      background: #f4f4f4;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+
+    .glass-input:focus {
+      outline: none;
+      border-color: var(--color-primary-light);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(116, 198, 157, 0.2);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .role-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .role-label {
+      background: #f4f4f4;
+      border: 2px solid transparent;
+      border-radius: 16px;
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .role-label input {
+      display: none;
+    }
+
+    .role-label:hover {
+      background: #eee;
+    }
+
+    .role-label input:checked + .role-content {
+      color: var(--color-primary);
+    }
+    
+    .role-label:has(input:checked) {
+      border-color: var(--color-primary);
+      background: rgba(45, 106, 79, 0.05);
+    }
+    .role-label:has(input:checked) svg {
+      fill: var(--color-primary);
+    }
+
+    .role-content {
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--color-text);
+    }
+    
+    .role-desc {
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+
+    .error-msg {
+      color: #d32f2f;
+      background: #ffebee;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+
+    .error-msg:empty {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-layout">
+    
+    <!-- Left Banner (Hidden on Mobile) -->
+    <div class="auth-banner">
+      <h1 style="font-size: 48px; font-weight: 800; margin-bottom: 16px; line-height: 1.1;">Gig work<br>reimagined.</h1>
+      <p style="font-size: 18px; opacity: 0.9; max-width: 400px; line-height: 1.5;">Join a federated marketplace owned and governed by Cooperative Societies. Fair wages. Zero corporate commissions.</p>
+    </div>
+
+    <!-- Right Content (Login Forms) -->
+    <div class="auth-content">
+      
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 40px;">
+        <svg viewBox="0 0 24 24" fill="var(--color-primary)" width="32" height="32">
+          <path d="M12 2L2 22h20L12 2zm0 3.8l7 14.2H5l7-14.2z"/>
+        </svg>
+        <span style="font-weight: 800; font-size: 24px; color: var(--color-primary); letter-spacing: -0.5px;">Sahakar Seva</span>
+      </div>
+
+      <div id="error-msg" class="error-msg"></div>
+
+      <!-- SIGN IN FORM -->
+      <form id="signin-form">
+        <h2 id="signin-title" style="font-size: 28px; font-weight: 800; color: var(--color-secondary); margin-bottom: 8px;">Customer Sign In</h2>
+        <p style="color: var(--color-text-muted); margin-bottom: 32px;">Welcome back! Enter your details to book a service.</p>
+        
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="signin-email" class="glass-input" placeholder="e.g. name@example.com" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="signin-password" class="glass-input" placeholder="********" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 18px; font-size: 16px; border-radius: 12px; margin-top: 16px; box-shadow: 0 4px 16px rgba(45,106,79,0.3);">
+          Sign In
+        </button>
+
+        <p style="text-align: center; margin-top: 24px; color: var(--color-text-muted);">
+          <span>Don't have an account?</span> 
+          <a href="#" class="toggle-form" style="color: var(--color-primary); font-weight: 700; text-decoration: none;">Sign Up</a>
+        </p>
+      </form>
+
+
+      <!-- SIGN UP FORM -->
+      <form id="signup-form" class="hidden">
+        <h2 id="signup-title" style="font-size: 28px; font-weight: 800; color: var(--color-secondary); margin-bottom: 8px;">Customer Sign Up</h2>
+        <p style="color: var(--color-text-muted); margin-bottom: 24px;">Join the cooperative network to book trusted services.</p>
+
+        <!-- Hidden input to enforce customer role -->
+        <input type="hidden" name="role" value="customer">
+        
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="signup-name" class="glass-input" placeholder="e.g. Ravi Kumar" required>
+        </div>
+
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="signup-email" class="glass-input" placeholder="e.g. name@example.com" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="signup-password" class="glass-input" placeholder="Min 6 characters" required minlength="6">
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 18px; font-size: 16px; border-radius: 12px; margin-top: 16px; box-shadow: 0 4px 16px rgba(45,106,79,0.3);">
+          Create Account
+        </button>
+
+        <p style="text-align: center; margin-top: 24px; color: var(--color-text-muted);">
+          <span>Already have an account?</span> 
+          <a href="#" class="toggle-form" style="color: var(--color-primary); font-weight: 700; text-decoration: none;">Sign In</a>
+        </p>
+      </form>
+      
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/supabase-client.js"></script>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/voice.js"></script>
+  <script src="/js/auth.js" defer></script>
+</body>
+</html>
